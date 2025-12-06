@@ -2,7 +2,6 @@
 
 namespace App\Http\Middleware;
 
-use Closure;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Symfony\Component\HttpFoundation\Response;
@@ -12,11 +11,11 @@ class SetCurrentOrganization
     /**
      * Handle an incoming request.
      *
-     * @param  \Closure(\Illuminate\Http\Request): (\Symfony\Component\HttpFoundation\Response)  $next
+     * @param \Closure(Request): (Response) $next
      */
-    public function handle(Request $request, Closure $next): Response
+    public function handle(Request $request, \Closure $next): Response
     {
-        if (! Auth::check()) {
+        if (!Auth::check()) {
             return $next($request);
         }
 
@@ -47,7 +46,7 @@ class SetCurrentOrganization
 
         // No valid organization set - redirect to organization selection if user has orgs
         if ($user->organizations()->exists()) {
-            if (! $request->routeIs('organizations.select') && ! $request->is('api/*')) {
+            if (!$request->routeIs('organizations.select') && !$request->is('api/*')) {
                 return redirect()->route('organizations.select');
             }
         }

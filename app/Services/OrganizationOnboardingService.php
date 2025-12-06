@@ -14,7 +14,8 @@ class OrganizationOnboardingService
     public function __construct(
         protected RolePermissionSeeder $rolePermissionSeeder,
         protected UserService $userService,
-    ) {}
+    ) {
+    }
 
     /**
      * Onboard a new organization with roles, permissions, and owner.
@@ -62,7 +63,7 @@ class OrganizationOnboardingService
         $organization->addUser($owner);
 
         // Mark this as the user's default organization if they don't have one
-        if (! $owner->current_organization_id) {
+        if (!$owner->current_organization_id) {
             $owner->setCurrentOrganization($organization);
         }
 
@@ -72,11 +73,11 @@ class OrganizationOnboardingService
         $this->assignOwnerRole($organization, $owner);
 
         // Set organization contact details from owner if not set
-        if (! $organization->email && $owner->email) {
+        if (!$organization->email && $owner->email) {
             $organization->email = $owner->email;
         }
 
-        if (! $organization->phone && $owner->phone) {
+        if (!$organization->phone && $owner->phone) {
             $organization->phone = $owner->phone;
         }
 
@@ -92,7 +93,7 @@ class OrganizationOnboardingService
      */
     protected function extractFirstName(?string $fullName): ?string
     {
-        if (! $fullName) {
+        if (!$fullName) {
             return null;
         }
 
@@ -104,7 +105,7 @@ class OrganizationOnboardingService
      */
     protected function extractLastName(?string $fullName): ?string
     {
-        if (! $fullName) {
+        if (!$fullName) {
             return null;
         }
 
@@ -122,7 +123,7 @@ class OrganizationOnboardingService
             ->where('slug', RoleEnum::OWNER->value)
             ->first();
 
-        if (! $ownerRole) {
+        if (!$ownerRole) {
             return;
         }
 
