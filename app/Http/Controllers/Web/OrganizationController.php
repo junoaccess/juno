@@ -15,12 +15,13 @@ class OrganizationController extends Controller
 {
     public function __construct(
         protected OrganizationService $organizationService,
-    ) {}
+    ) {
+    }
 
     public function index(): Response
     {
-        return Inertia::render('Organizations/Index', [
-            'organizations' => $this->organizationService->paginate(),
+        return Inertia::render('organisations/index', [
+            'organizations' => $this->organizationService->paginate(15),
         ]);
     }
 

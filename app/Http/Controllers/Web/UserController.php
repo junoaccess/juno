@@ -15,14 +15,15 @@ class UserController extends Controller
 {
     public function __construct(
         protected UserService $userService,
-    ) {}
+    ) {
+    }
 
     public function index(): Response
     {
         $this->authorize('viewAny', User::class);
 
-        return Inertia::render('Users/Index', [
-            'users' => $this->userService->paginate(),
+        return Inertia::render('users/index', [
+            'users' => $this->userService->paginate(15),
         ]);
     }
 

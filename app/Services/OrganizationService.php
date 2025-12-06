@@ -68,6 +68,7 @@ class OrganizationService
     public function paginate(int $perPage = 15)
     {
         return Organization::query()
+            ->withCount(['users', 'teams'])
             ->latest()
             ->paginate($perPage);
     }
