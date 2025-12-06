@@ -11,6 +11,6 @@ trait OrganizationScoped
      */
     protected static function bootOrganizationScoped(): void
     {
-        static::addGlobalScope(new OrganizationScope());
+        static::addGlobalScope(new OrganizationScope);
     }
 }

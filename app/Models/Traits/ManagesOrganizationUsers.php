@@ -54,7 +54,7 @@ trait ManagesOrganizationUsers
      */
     public function removeUser(User $user): bool
     {
-        if (!$this->hasUser($user)) {
+        if (! $this->hasUser($user)) {
             return false;
         }
 

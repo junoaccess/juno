@@ -38,7 +38,7 @@ trait ManagesTeamUsers
     public function addUser(User $user): bool
     {
         // If the team is associated with an organization, ensure the user belongs to it.
-        if (isset($this->organization) && !$this->organization->hasUser($user)) {
+        if (isset($this->organization) && ! $this->organization->hasUser($user)) {
             return false;
         }
 
@@ -56,7 +56,7 @@ trait ManagesTeamUsers
      */
     public function removeUser(User $user): bool
     {
-        if (!$this->users()->where('users.id', $user->id)->exists()) {
+        if (! $this->users()->where('users.id', $user->id)->exists()) {
             return false;
         }
 
@@ -95,7 +95,7 @@ trait ManagesTeamUsers
      */
     public function syncUsers(array $userIds): array
     {
-        if (!isset($this->organization)) {
+        if (! isset($this->organization)) {
             return $this->users()->sync($userIds);
         }
 

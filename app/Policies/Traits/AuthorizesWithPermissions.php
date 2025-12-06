@@ -13,7 +13,7 @@ trait AuthorizesWithPermissions
         $permissionString = match (true) {
             $permission instanceof Resource && $action instanceof Permission => $permission->permission($action),
             $permission instanceof Resource => $permission->wildcard(),
-            $permission instanceof Permission && null === $action => $permission::all(),
+            $permission instanceof Permission && $action === null => $permission::all(),
             is_string($permission) => $permission,
             default => throw new \InvalidArgumentException('Invalid permission format'),
         };

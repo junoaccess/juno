@@ -44,7 +44,7 @@ class OrganizationSwitchController extends Controller
         $user = Auth::user();
 
         // Verify user is a member of this organization
-        if (!$user->organizations->contains($organization)) {
+        if (! $user->organizations->contains($organization)) {
             abort(403, 'You are not a member of this organization.');
         }
 

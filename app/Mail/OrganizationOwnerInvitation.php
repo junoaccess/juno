@@ -23,8 +23,7 @@ class OrganizationOwnerInvitation extends Mailable implements ShouldQueue
     public function __construct(
         public Organization $organization,
         public User $owner,
-    ) {
-    }
+    ) {}
 
     /**
      * Get the message envelope.

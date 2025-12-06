@@ -13,8 +13,7 @@ readonly class OwnerData
         public ?string $lastName = null,
         public ?string $middleName = null,
         public ?string $phone = null,
-    ) {
-    }
+    ) {}
 
     /**
      * Create from array.

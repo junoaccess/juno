@@ -18,8 +18,7 @@ class OnboardOrganization implements ShouldQueue
     public function __construct(
         public Organization $organization,
         public ?array $ownerData = null,
-    ) {
-    }
+    ) {}
 
     public function handle(OrganizationOnboardingService $service): void
     {

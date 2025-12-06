@@ -85,20 +85,20 @@ class InvitationService
      */
     public function accept(Invitation $invitation, User $user): void
     {
-        if (!$invitation->canBeAccepted()) {
+        if (! $invitation->canBeAccepted()) {
             throw new \RuntimeException('This invitation cannot be accepted.');
         }
 
         DB::transaction(function () use ($invitation, $user) {
             // Attach user to organization if not already a member
-            if (!$invitation->organization->users()->where('user_id', $user->id)->exists()) {
+            if (! $invitation->organization->users()->where('user_id', $user->id)->exists()) {
                 $invitation->organization->users()->attach($user->id, [
-                    'is_default' => 0 === $user->organizations()->count(),
+                    'is_default' => $user->organizations()->count() === 0,
                 ]);
             }
 
             // Set as current organization if user doesn't have one
-            if (!$user->current_organization_id) {
+            if (! $user->current_organization_id) {
                 $user->setCurrentOrganization($invitation->organization);
             }
 
@@ -194,7 +194,7 @@ class InvitationService
             }
         }
 
-        if (!empty($roleIds)) {
+        if (! empty($roleIds)) {
             $user->roles()->syncWithoutDetaching($roleIds);
         }
     }

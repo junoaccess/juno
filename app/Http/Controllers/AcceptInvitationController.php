@@ -15,8 +15,7 @@ class AcceptInvitationController extends Controller
 {
     public function __construct(
         protected InvitationService $invitationService,
-    ) {
-    }
+    ) {}
 
     /**
      * Show the invitation acceptance page.
@@ -25,11 +24,11 @@ class AcceptInvitationController extends Controller
     {
         $invitation = $this->invitationService->findByToken($token);
 
-        if (!$invitation) {
+        if (! $invitation) {
             abort(404, 'Invitation not found.');
         }
 
-        if (!$invitation->canBeAccepted()) {
+        if (! $invitation->canBeAccepted()) {
             $message = $invitation->is_expired
                 ? 'This invitation has expired.'
                 : 'This invitation has already been accepted.';
@@ -61,7 +60,7 @@ class AcceptInvitationController extends Controller
             'userExists' => (bool) $existingUser,
             'isLoggedIn' => $isLoggedIn,
             'emailMatches' => $emailMatches,
-            'needsRegistration' => !$existingUser && !$isLoggedIn,
+            'needsRegistration' => ! $existingUser && ! $isLoggedIn,
         ]);
     }
 
@@ -72,7 +71,7 @@ class AcceptInvitationController extends Controller
     {
         $invitation = $this->invitationService->findByToken($token);
 
-        if (!$invitation || !$invitation->canBeAccepted()) {
+        if (! $invitation || ! $invitation->canBeAccepted()) {
             return back()->withErrors([
                 'token' => 'This invitation is no longer valid.',
             ]);
@@ -83,7 +82,7 @@ class AcceptInvitationController extends Controller
         // Determine or create the user
         $user = User::where('email', $invitation->email)->first();
 
-        if (!$user) {
+        if (! $user) {
             // Create new user from registration data
             $user = User::create([
                 'first_name' => $validated['first_name'],

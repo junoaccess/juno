@@ -11,11 +11,11 @@ class SetCurrentOrganization
     /**
      * Handle an incoming request.
      *
-     * @param \Closure(Request): (Response) $next
+     * @param  \Closure(Request): (Response)  $next
      */
     public function handle(Request $request, \Closure $next): Response
     {
-        if (!Auth::check()) {
+        if (! Auth::check()) {
             return $next($request);
         }
 
@@ -46,7 +46,7 @@ class SetCurrentOrganization
 
         // No valid organization set - redirect to organization selection if user has orgs
         if ($user->organizations()->exists()) {
-            if (!$request->routeIs('organizations.select') && !$request->is('api/*')) {
+            if (! $request->routeIs('organizations.select') && ! $request->is('api/*')) {
                 return redirect()->route('organizations.select');
             }
         }

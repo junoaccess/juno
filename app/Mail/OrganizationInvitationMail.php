@@ -21,8 +21,7 @@ class OrganizationInvitationMail extends Mailable implements ShouldQueue
     public function __construct(
         public Invitation $invitation,
         public string $token,
-    ) {
-    }
+    ) {}
 
     /**
      * Get the message envelope.

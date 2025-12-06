@@ -17,7 +17,7 @@ class OrganizationScope implements Scope
     {
         $orgId = $this->resolveOrganizationId();
 
-        if (null === $orgId) {
+        if ($orgId === null) {
             return;
         }
 
@@ -37,7 +37,7 @@ class OrganizationScope implements Scope
         // 2) Resolve from request domain/subdomain slug
         $slug = $this->extractOrganizationSlug();
 
-        if (!$slug) {
+        if (! $slug) {
             return null;
         }
 
@@ -54,7 +54,7 @@ class OrganizationScope implements Scope
      */
     protected function extractOrganizationSlug(): ?string
     {
-        if (!app()->bound('request')) {
+        if (! app()->bound('request')) {
             return null;
         }
 

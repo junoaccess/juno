@@ -80,7 +80,7 @@ class Invitation extends Model
     protected function isPending(): Attribute
     {
         return Attribute::make(
-            get: fn () => 'pending' === $this->status && !$this->is_expired
+            get: fn () => $this->status === 'pending' && ! $this->is_expired
         );
     }
 
@@ -89,7 +89,7 @@ class Invitation extends Model
      */
     public function canBeAccepted(): bool
     {
-        return $this->is_pending && !$this->is_expired;
+        return $this->is_pending && ! $this->is_expired;
     }
 
     /**

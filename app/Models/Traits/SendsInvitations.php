@@ -39,7 +39,7 @@ trait SendsInvitations
             return false;
         }
 
-        if ('pending' !== $invitation->status) {
+        if ($invitation->status !== 'pending') {
             return false;
         }
 
@@ -70,7 +70,7 @@ trait SendsInvitations
             return false;
         }
 
-        if ('pending' !== $invitation->status) {
+        if ($invitation->status !== 'pending') {
             return false;
         }
 
@@ -88,7 +88,7 @@ trait SendsInvitations
             return false;
         }
 
-        if ('pending' !== $invitation->status) {
+        if ($invitation->status !== 'pending') {
             return false;
         }
 
