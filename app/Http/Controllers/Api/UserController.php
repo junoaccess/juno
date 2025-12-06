@@ -5,63 +5,68 @@ namespace App\Http\Controllers\Api;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\StoreUserRequest;
 use App\Http\Requests\UpdateUserRequest;
+use App\Http\Resources\UserResource;
 use App\Models\User;
+use App\Services\UserService;
+use Illuminate\Http\JsonResponse;
+use Illuminate\Http\Resources\Json\AnonymousResourceCollection;
 
 class UserController extends Controller
 {
-    /**
-     * Display a listing of the resource.
-     */
-    public function index()
+    public function __construct(
+        protected UserService $userService,
+    ) {}
+
+    public function index(): AnonymousResourceCollection
     {
-        //
+        $this->authorize('viewAny', User::class);
+
+        return UserResource::collection(
+            $this->userService->paginate()
+        );
     }
 
-    /**
-     * Show the form for creating a new resource.
-     */
-    public function create()
+    public function store(StoreUserRequest $request): JsonResponse
     {
-        //
+        $this->authorize('create', User::class);
+
+        $user = $this->userService->create($request->validated());
+
+        return response()->json([
+            'message' => 'User created successfully!',
+            'data' => new UserResource($user),
+        ], 201);
     }
 
-    /**
-     * Store a newly created resource in storage.
-     */
-    public function store(StoreUserRequest $request)
+    public function show(User $user): UserResource
     {
-        //
+        $this->authorize('view', $user);
+
+        return new UserResource(
+            $this->userService->loadRelationships($user)
+        );
     }
 
-    /**
-     * Display the specified resource.
-     */
-    public function show(User $user)
+    public function update(UpdateUserRequest $request, User $user): JsonResponse
     {
-        //
+        $this->authorize('update', $user);
+
+        $user = $this->userService->update($user, $request->validated());
+
+        return response()->json([
+            'message' => 'User updated successfully!',
+            'data' => new UserResource($user),
+        ]);
     }
 
-    /**
-     * Show the form for editing the specified resource.
-     */
-    public function edit(User $user)
+    public function destroy(User $user): JsonResponse
     {
-        //
-    }
+        $this->authorize('delete', $user);
 
-    /**
-     * Update the specified resource in storage.
-     */
-    public function update(UpdateUserRequest $request, User $user)
-    {
-        //
-    }
+        $this->userService->delete($user);
 
-    /**
-     * Remove the specified resource from storage.
-     */
-    public function destroy(User $user)
-    {
-        //
+        return response()->json([
+            'message' => 'User deleted successfully!',
+        ]);
     }
 }

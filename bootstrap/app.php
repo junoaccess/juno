@@ -11,6 +11,7 @@ return Application::configure(basePath: dirname(__DIR__))
     ->withRouting(
         web: __DIR__.'/../routes/web/routes.php',
         api: __DIR__.'/../routes/api/v1/routes.php',
+        apiPrefix: 'api/v1',
         health: '/up',
     )
     ->withMiddleware(function (Middleware $middleware): void {
@@ -23,5 +24,4 @@ return Application::configure(basePath: dirname(__DIR__))
         ]);
     })
     ->withExceptions(function (Exceptions $exceptions): void {
-        //
     })->create();

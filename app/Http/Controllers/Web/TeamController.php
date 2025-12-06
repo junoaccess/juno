@@ -6,62 +6,81 @@ use App\Http\Controllers\Controller;
 use App\Http\Requests\StoreTeamRequest;
 use App\Http\Requests\UpdateTeamRequest;
 use App\Models\Team;
+use App\Services\TeamService;
+use Illuminate\Http\RedirectResponse;
+use Inertia\Inertia;
+use Inertia\Response;
 
 class TeamController extends Controller
 {
-    /**
-     * Display a listing of the resource.
-     */
-    public function index()
+    public function __construct(
+        protected TeamService $teamService,
+    ) {}
+
+    public function index(): Response
     {
-        //
+        $this->authorize('viewAny', Team::class);
+
+        return Inertia::render('Teams/Index', [
+            'teams' => $this->teamService->paginate(),
+        ]);
     }
 
-    /**
-     * Show the form for creating a new resource.
-     */
-    public function create()
+    public function create(): Response
     {
-        //
+        $this->authorize('create', Team::class);
+
+        return Inertia::render('Teams/Create');
     }
 
-    /**
-     * Store a newly created resource in storage.
-     */
-    public function store(StoreTeamRequest $request)
+    public function store(StoreTeamRequest $request): RedirectResponse
     {
-        //
+        $this->authorize('create', Team::class);
+
+        $team = $this->teamService->create($request->validated());
+
+        return redirect()
+            ->route('teams.show', $team)
+            ->with('success', 'Team created successfully!');
     }
 
-    /**
-     * Display the specified resource.
-     */
-    public function show(Team $team)
+    public function show(Team $team): Response
     {
-        //
+        $this->authorize('view', $team);
+
+        return Inertia::render('Teams/Show', [
+            'team' => $this->teamService->loadRelationships($team),
+        ]);
     }
 
-    /**
-     * Show the form for editing the specified resource.
-     */
-    public function edit(Team $team)
+    public function edit(Team $team): Response
     {
-        //
+        $this->authorize('update', $team);
+
+        return Inertia::render('Teams/Edit', [
+            'team' => $team,
+        ]);
     }
 
-    /**
-     * Update the specified resource in storage.
-     */
-    public function update(UpdateTeamRequest $request, Team $team)
+    public function update(UpdateTeamRequest $request, Team $team): RedirectResponse
     {
-        //
+        $this->authorize('update', $team);
+
+        $this->teamService->update($team, $request->validated());
+
+        return redirect()
+            ->route('teams.show', $team)
+            ->with('success', 'Team updated successfully!');
     }
 
-    /**
-     * Remove the specified resource from storage.
-     */
-    public function destroy(Team $team)
+    public function destroy(Team $team): RedirectResponse
     {
-        //
+        $this->authorize('delete', $team);
+
+        $this->teamService->delete($team);
+
+        return redirect()
+            ->route('teams.index')
+            ->with('success', 'Team deleted successfully!');
     }
 }

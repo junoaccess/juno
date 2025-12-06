@@ -6,62 +6,81 @@ use App\Http\Controllers\Controller;
 use App\Http\Requests\StoreUserRequest;
 use App\Http\Requests\UpdateUserRequest;
 use App\Models\User;
+use App\Services\UserService;
+use Illuminate\Http\RedirectResponse;
+use Inertia\Inertia;
+use Inertia\Response;
 
 class UserController extends Controller
 {
-    /**
-     * Display a listing of the resource.
-     */
-    public function index()
+    public function __construct(
+        protected UserService $userService,
+    ) {}
+
+    public function index(): Response
     {
-        //
+        $this->authorize('viewAny', User::class);
+
+        return Inertia::render('Users/Index', [
+            'users' => $this->userService->paginate(),
+        ]);
     }
 
-    /**
-     * Show the form for creating a new resource.
-     */
-    public function create()
+    public function create(): Response
     {
-        //
+        $this->authorize('create', User::class);
+
+        return Inertia::render('Users/Create');
     }
 
-    /**
-     * Store a newly created resource in storage.
-     */
-    public function store(StoreUserRequest $request)
+    public function store(StoreUserRequest $request): RedirectResponse
     {
-        //
+        $this->authorize('create', User::class);
+
+        $user = $this->userService->create($request->validated());
+
+        return redirect()
+            ->route('users.show', $user)
+            ->with('success', 'User created successfully!');
     }
 
-    /**
-     * Display the specified resource.
-     */
-    public function show(User $user)
+    public function show(User $user): Response
     {
-        //
+        $this->authorize('view', $user);
+
+        return Inertia::render('Users/Show', [
+            'user' => $this->userService->loadRelationships($user),
+        ]);
     }
 
-    /**
-     * Show the form for editing the specified resource.
-     */
-    public function edit(User $user)
+    public function edit(User $user): Response
     {
-        //
+        $this->authorize('update', $user);
+
+        return Inertia::render('Users/Edit', [
+            'user' => $user,
+        ]);
     }
 
-    /**
-     * Update the specified resource in storage.
-     */
-    public function update(UpdateUserRequest $request, User $user)
+    public function update(UpdateUserRequest $request, User $user): RedirectResponse
     {
-        //
+        $this->authorize('update', $user);
+
+        $this->userService->update($user, $request->validated());
+
+        return redirect()
+            ->route('users.show', $user)
+            ->with('success', 'User updated successfully!');
     }
 
-    /**
-     * Remove the specified resource from storage.
-     */
-    public function destroy(User $user)
+    public function destroy(User $user): RedirectResponse
     {
-        //
+        $this->authorize('delete', $user);
+
+        $this->userService->delete($user);
+
+        return redirect()
+            ->route('users.index')
+            ->with('success', 'User deleted successfully!');
     }
 }

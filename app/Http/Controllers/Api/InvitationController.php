@@ -5,63 +5,68 @@ namespace App\Http\Controllers\Api;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\StoreInvitationRequest;
 use App\Http\Requests\UpdateInvitationRequest;
+use App\Http\Resources\InvitationResource;
 use App\Models\Invitation;
+use App\Services\InvitationService;
+use Illuminate\Http\JsonResponse;
+use Illuminate\Http\Resources\Json\AnonymousResourceCollection;
 
 class InvitationController extends Controller
 {
-    /**
-     * Display a listing of the resource.
-     */
-    public function index()
+    public function __construct(
+        protected InvitationService $invitationService,
+    ) {}
+
+    public function index(): AnonymousResourceCollection
     {
-        //
+        $this->authorize('viewAny', Invitation::class);
+
+        return InvitationResource::collection(
+            $this->invitationService->paginate()
+        );
     }
 
-    /**
-     * Show the form for creating a new resource.
-     */
-    public function create()
+    public function store(StoreInvitationRequest $request): JsonResponse
     {
-        //
+        $this->authorize('create', Invitation::class);
+
+        $invitation = $this->invitationService->create($request->validated());
+
+        return response()->json([
+            'message' => 'Invitation sent successfully!',
+            'data' => new InvitationResource($invitation),
+        ], 201);
     }
 
-    /**
-     * Store a newly created resource in storage.
-     */
-    public function store(StoreInvitationRequest $request)
+    public function show(Invitation $invitation): InvitationResource
     {
-        //
+        $this->authorize('view', $invitation);
+
+        return new InvitationResource(
+            $this->invitationService->loadRelationships($invitation)
+        );
     }
 
-    /**
-     * Display the specified resource.
-     */
-    public function show(Invitation $invitation)
+    public function update(UpdateInvitationRequest $request, Invitation $invitation): JsonResponse
     {
-        //
+        $this->authorize('update', $invitation);
+
+        $invitation = $this->invitationService->update($invitation, $request->validated());
+
+        return response()->json([
+            'message' => 'Invitation updated successfully!',
+            'data' => new InvitationResource($invitation),
+        ]);
     }
 
-    /**
-     * Show the form for editing the specified resource.
-     */
-    public function edit(Invitation $invitation)
+    public function destroy(Invitation $invitation): JsonResponse
     {
-        //
-    }
+        $this->authorize('delete', $invitation);
 
-    /**
-     * Update the specified resource in storage.
-     */
-    public function update(UpdateInvitationRequest $request, Invitation $invitation)
-    {
-        //
-    }
+        $this->invitationService->delete($invitation);
 
-    /**
-     * Remove the specified resource from storage.
-     */
-    public function destroy(Invitation $invitation)
-    {
-        //
+        return response()->json([
+            'message' => 'Invitation deleted successfully!',
+        ]);
     }
 }

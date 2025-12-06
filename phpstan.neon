@@ -1,0 +1,30 @@
+includes:
+    - ./vendor/larastan/larastan/extension.neon
+
+parameters:
+    paths:
+        - app
+        - bootstrap
+        - config
+        - database
+        - routes
+
+    # Level 5 is a good balance between strictness and practicality
+    level: 5
+
+    ignoreErrors:
+        # Ignore missing property errors on models (dynamic properties)
+        - '#Property App\\Models\\.+::\$\w+ is never read, only written#'
+        - '#Property App\\Models\\.+::\$\w+ is never written, only read#'
+
+        # Ignore Inertia responses
+        - '#Method App\\Http\\Controllers\\.+::\w+ has no return type specified#'
+
+    excludePaths:
+        - ./vendor
+        - ./storage
+        - ./bootstrap/cache
+
+    checkMissingIterableValueType: false
+    checkGenericClassInNonGenericObjectType: false
+    reportUnmatchedIgnoredErrors: false

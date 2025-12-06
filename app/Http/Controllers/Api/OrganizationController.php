@@ -5,63 +5,61 @@ namespace App\Http\Controllers\Api;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\StoreOrganizationRequest;
 use App\Http\Requests\UpdateOrganizationRequest;
+use App\Http\Resources\OrganizationResource;
 use App\Models\Organization;
+use App\Services\OrganizationService;
+use Illuminate\Http\JsonResponse;
+use Illuminate\Http\Resources\Json\AnonymousResourceCollection;
 
 class OrganizationController extends Controller
 {
-    /**
-     * Display a listing of the resource.
-     */
-    public function index()
+    public function __construct(
+        protected OrganizationService $organizationService,
+    ) {}
+
+    public function index(): AnonymousResourceCollection
     {
-        //
+        return OrganizationResource::collection(
+            $this->organizationService->paginate()
+        );
     }
 
-    /**
-     * Show the form for creating a new resource.
-     */
-    public function create()
+    public function store(StoreOrganizationRequest $request): JsonResponse
     {
-        //
+        $organization = $this->organizationService->create(
+            data: $request->validated(),
+            ownerData: $request->getOwnerData()
+        );
+
+        return response()->json([
+            'message' => 'Organization created successfully! The owner will receive an email invitation.',
+            'data' => new OrganizationResource($organization),
+        ], 201);
     }
 
-    /**
-     * Store a newly created resource in storage.
-     */
-    public function store(StoreOrganizationRequest $request)
+    public function show(Organization $organization): OrganizationResource
     {
-        //
+        return new OrganizationResource(
+            $this->organizationService->loadRelationships($organization)
+        );
     }
 
-    /**
-     * Display the specified resource.
-     */
-    public function show(Organization $organization)
+    public function update(UpdateOrganizationRequest $request, Organization $organization): JsonResponse
     {
-        //
+        $organization = $this->organizationService->update($organization, $request->validated());
+
+        return response()->json([
+            'message' => 'Organization updated successfully!',
+            'data' => new OrganizationResource($organization),
+        ]);
     }
 
-    /**
-     * Show the form for editing the specified resource.
-     */
-    public function edit(Organization $organization)
+    public function destroy(Organization $organization): JsonResponse
     {
-        //
-    }
+        $this->organizationService->delete($organization);
 
-    /**
-     * Update the specified resource in storage.
-     */
-    public function update(UpdateOrganizationRequest $request, Organization $organization)
-    {
-        //
-    }
-
-    /**
-     * Remove the specified resource from storage.
-     */
-    public function destroy(Organization $organization)
-    {
-        //
+        return response()->json([
+            'message' => 'Organization deleted successfully!',
+        ]);
     }
 }

@@ -6,62 +6,70 @@ use App\Http\Controllers\Controller;
 use App\Http\Requests\StoreOrganizationRequest;
 use App\Http\Requests\UpdateOrganizationRequest;
 use App\Models\Organization;
+use App\Services\OrganizationService;
+use Illuminate\Http\RedirectResponse;
+use Inertia\Inertia;
+use Inertia\Response;
 
 class OrganizationController extends Controller
 {
-    /**
-     * Display a listing of the resource.
-     */
-    public function index()
+    public function __construct(
+        protected OrganizationService $organizationService,
+    ) {}
+
+    public function index(): Response
     {
-        //
+        return Inertia::render('Organizations/Index', [
+            'organizations' => $this->organizationService->paginate(),
+        ]);
     }
 
-    /**
-     * Show the form for creating a new resource.
-     */
-    public function create()
+    public function create(): Response
     {
-        //
+        return Inertia::render('Organizations/Create');
     }
 
-    /**
-     * Store a newly created resource in storage.
-     */
-    public function store(StoreOrganizationRequest $request)
+    public function store(StoreOrganizationRequest $request): RedirectResponse
     {
-        //
+        $organization = $this->organizationService->create(
+            data: $request->validated(),
+            ownerData: $request->getOwnerData()
+        );
+
+        return redirect()
+            ->route('organizations.show', $organization)
+            ->with('success', 'Organization created successfully! The owner will receive an email invitation.');
     }
 
-    /**
-     * Display the specified resource.
-     */
-    public function show(Organization $organization)
+    public function show(Organization $organization): Response
     {
-        //
+        return Inertia::render('Organizations/Show', [
+            'organization' => $this->organizationService->loadRelationships($organization),
+        ]);
     }
 
-    /**
-     * Show the form for editing the specified resource.
-     */
-    public function edit(Organization $organization)
+    public function edit(Organization $organization): Response
     {
-        //
+        return Inertia::render('Organizations/Edit', [
+            'organization' => $organization,
+        ]);
     }
 
-    /**
-     * Update the specified resource in storage.
-     */
-    public function update(UpdateOrganizationRequest $request, Organization $organization)
+    public function update(UpdateOrganizationRequest $request, Organization $organization): RedirectResponse
     {
-        //
+        $this->organizationService->update($organization, $request->validated());
+
+        return redirect()
+            ->route('organizations.show', $organization)
+            ->with('success', 'Organization updated successfully!');
     }
 
-    /**
-     * Remove the specified resource from storage.
-     */
-    public function destroy(Organization $organization)
+    public function destroy(Organization $organization): RedirectResponse
     {
-        //
+        $this->organizationService->delete($organization);
+
+        return redirect()
+            ->route('organizations.index')
+            ->with('success', 'Organization deleted successfully!');
     }
 }

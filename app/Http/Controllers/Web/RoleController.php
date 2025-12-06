@@ -6,62 +6,81 @@ use App\Http\Controllers\Controller;
 use App\Http\Requests\StoreRoleRequest;
 use App\Http\Requests\UpdateRoleRequest;
 use App\Models\Role;
+use App\Services\RoleService;
+use Illuminate\Http\RedirectResponse;
+use Inertia\Inertia;
+use Inertia\Response;
 
 class RoleController extends Controller
 {
-    /**
-     * Display a listing of the resource.
-     */
-    public function index()
+    public function __construct(
+        protected RoleService $roleService,
+    ) {}
+
+    public function index(): Response
     {
-        //
+        $this->authorize('viewAny', Role::class);
+
+        return Inertia::render('Roles/Index', [
+            'roles' => $this->roleService->paginate(),
+        ]);
     }
 
-    /**
-     * Show the form for creating a new resource.
-     */
-    public function create()
+    public function create(): Response
     {
-        //
+        $this->authorize('create', Role::class);
+
+        return Inertia::render('Roles/Create');
     }
 
-    /**
-     * Store a newly created resource in storage.
-     */
-    public function store(StoreRoleRequest $request)
+    public function store(StoreRoleRequest $request): RedirectResponse
     {
-        //
+        $this->authorize('create', Role::class);
+
+        $role = $this->roleService->create($request->validated());
+
+        return redirect()
+            ->route('roles.show', $role)
+            ->with('success', 'Role created successfully!');
     }
 
-    /**
-     * Display the specified resource.
-     */
-    public function show(Role $role)
+    public function show(Role $role): Response
     {
-        //
+        $this->authorize('view', $role);
+
+        return Inertia::render('Roles/Show', [
+            'role' => $this->roleService->loadRelationships($role),
+        ]);
     }
 
-    /**
-     * Show the form for editing the specified resource.
-     */
-    public function edit(Role $role)
+    public function edit(Role $role): Response
     {
-        //
+        $this->authorize('update', $role);
+
+        return Inertia::render('Roles/Edit', [
+            'role' => $role,
+        ]);
     }
 
-    /**
-     * Update the specified resource in storage.
-     */
-    public function update(UpdateRoleRequest $request, Role $role)
+    public function update(UpdateRoleRequest $request, Role $role): RedirectResponse
     {
-        //
+        $this->authorize('update', $role);
+
+        $this->roleService->update($role, $request->validated());
+
+        return redirect()
+            ->route('roles.show', $role)
+            ->with('success', 'Role updated successfully!');
     }
 
-    /**
-     * Remove the specified resource from storage.
-     */
-    public function destroy(Role $role)
+    public function destroy(Role $role): RedirectResponse
     {
-        //
+        $this->authorize('delete', $role);
+
+        $this->roleService->delete($role);
+
+        return redirect()
+            ->route('roles.index')
+            ->with('success', 'Role deleted successfully!');
     }
 }

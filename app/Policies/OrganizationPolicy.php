@@ -2,65 +2,47 @@
 
 namespace App\Policies;
 
+use App\Enums\Resource;
 use App\Models\Organization;
 use App\Models\User;
-use Illuminate\Auth\Access\Response;
+use App\Policies\Traits\AuthorizesWithPermissions;
 
 class OrganizationPolicy
 {
-    /**
-     * Determine whether the user can view any models.
-     */
+    use AuthorizesWithPermissions;
+
     public function viewAny(User $user): bool
     {
-        return false;
+        return $this->hasPermission($user, Resource::ORGANIZATIONS->viewAny());
     }
 
-    /**
-     * Determine whether the user can view the model.
-     */
     public function view(User $user, Organization $organization): bool
     {
-        return false;
+        return $this->hasPermission($user, Resource::ORGANIZATIONS->view());
     }
 
-    /**
-     * Determine whether the user can create models.
-     */
     public function create(User $user): bool
     {
-        return false;
+        return $this->hasPermission($user, Resource::ORGANIZATIONS->create());
     }
 
-    /**
-     * Determine whether the user can update the model.
-     */
     public function update(User $user, Organization $organization): bool
     {
-        return false;
+        return $this->hasPermission($user, Resource::ORGANIZATIONS->update());
     }
 
-    /**
-     * Determine whether the user can delete the model.
-     */
     public function delete(User $user, Organization $organization): bool
     {
-        return false;
+        return $this->hasPermission($user, Resource::ORGANIZATIONS->delete());
     }
 
-    /**
-     * Determine whether the user can restore the model.
-     */
     public function restore(User $user, Organization $organization): bool
     {
-        return false;
+        return $this->hasPermission($user, Resource::ORGANIZATIONS->restore());
     }
 
-    /**
-     * Determine whether the user can permanently delete the model.
-     */
     public function forceDelete(User $user, Organization $organization): bool
     {
-        return false;
+        return $this->hasPermission($user, Resource::ORGANIZATIONS->forceDelete());
     }
 }
