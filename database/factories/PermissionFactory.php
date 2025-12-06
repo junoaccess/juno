@@ -16,8 +16,12 @@ class PermissionFactory extends Factory
      */
     public function definition(): array
     {
+        $name = $this->faker->unique()->word();
+
         return [
-            //
+            'name' => $name,
+            'slug' => \Illuminate\Support\Str::slug($name),
+            'description' => $this->faker->sentence(),
         ];
     }
 }

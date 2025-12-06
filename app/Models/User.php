@@ -42,6 +42,8 @@ class User extends Authenticatable
         'email',
         'date_of_birth',
         'password',
+        'email_verified_at',
+        'current_organization_id',
         'profile_photo_path',
     ];
 
@@ -138,7 +140,7 @@ class User extends Authenticatable
      */
     public function hasPermission(string $permission): bool
     {
-        if (! $this->current_organization_id) {
+        if (!$this->current_organization_id) {
             return false;
         }
 
@@ -157,7 +159,7 @@ class User extends Authenticatable
      */
     public function hasRole(string $role): bool
     {
-        if (! $this->current_organization_id) {
+        if (!$this->current_organization_id) {
             return false;
         }
 
