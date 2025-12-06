@@ -9,18 +9,19 @@ A modern, multi-tenant Laravel application with a comprehensive permission syste
 
 ## Features
 
-- 🏢 **Multi-tenant Architecture** - Organization-scoped data with team management
-- 🔐 **Advanced Permission System** - Fine-grained role-based access control with wildcard support
-- 🎨 **Modern UI** - Built with React, Inertia.js, and shadcn/ui components
-- 🚀 **RESTful API** - Versioned API (v1) with Laravel Sanctum authentication
-- ✅ **Type-Safe** - Enum-based permission helpers for IDE autocomplete
-- 🧪 **Well Tested** - Comprehensive test suite with Pest PHP
-- 📱 **Responsive Design** - Mobile-first design with Tailwind CSS v4
-- 🔄 **Real-time Ready** - SPA architecture with seamless client-side navigation
+- **Multi-tenant Architecture** - Organization-scoped data with team management
+- **Advanced Permission System** - Fine-grained role-based access control with wildcard support
+- **Modern UI** - Built with React, Inertia.js, and shadcn/ui components
+- **RESTful API** - Versioned API (v1) with Laravel Sanctum authentication
+- **Type-Safe** - Enum-based permission helpers for IDE autocomplete
+- **Well Tested** - Comprehensive test suite with Pest PHP
+- **Responsive Design** - Mobile-first design with Tailwind CSS v4
+- **Real-time Ready** - SPA architecture with seamless client-side navigation
 
 ## Tech Stack
 
 ### Backend
+
 - **PHP 8.4+** - Latest PHP features including property hooks
 - **Laravel 12.x** - Modern PHP framework with streamlined structure
 - **PostgreSQL** - Robust relational database
@@ -28,6 +29,7 @@ A modern, multi-tenant Laravel application with a comprehensive permission syste
 - **Laravel Fortify** - Frontend-agnostic authentication backend
 
 ### Frontend
+
 - **React 19** - Latest React with concurrent features
 - **Inertia.js v2** - Modern monolith with SPA experience
 - **TypeScript** - Type-safe JavaScript
@@ -36,6 +38,7 @@ A modern, multi-tenant Laravel application with a comprehensive permission syste
 - **Laravel Wayfinder** - Type-safe route helpers
 
 ### Testing & Quality
+
 - **Pest PHP v4** - Elegant testing framework with browser testing
 - **PHPStan** - Static analysis for PHP
 - **Laravel Pint** - Opinionated code formatter
@@ -53,28 +56,33 @@ A modern, multi-tenant Laravel application with a comprehensive permission syste
 ## Installation
 
 1. **Clone the repository**
+
    ```bash
    git clone https://github.com/usejuno/juno.git
    cd juno
    ```
 
 2. **Install PHP dependencies**
+
    ```bash
    composer install
    ```
 
 3. **Install Node dependencies**
+
    ```bash
    npm install
    ```
 
 4. **Set up environment file**
+
    ```bash
    cp .env.example .env
    php artisan key:generate
    ```
 
 5. **Configure your database in `.env`**
+
    ```env
    DB_CONNECTION=pgsql
    DB_HOST=127.0.0.1
@@ -85,11 +93,13 @@ A modern, multi-tenant Laravel application with a comprehensive permission syste
    ```
 
 6. **Run migrations and seed the database**
+
    ```bash
    php artisan migrate:fresh --seed
    ```
 
 7. **Build frontend assets**
+
    ```bash
    npm run build
    # or for development with hot reload
@@ -97,6 +107,7 @@ A modern, multi-tenant Laravel application with a comprehensive permission syste
    ```
 
 8. **Start the development server**
+
    ```bash
    php artisan serve
    ```
@@ -280,19 +291,21 @@ We welcome contributions! Please see [CONTRIBUTING.md](CONTRIBUTING.md) for deta
 3. Make your changes
 4. Write or update tests
 5. Run code quality checks:
+
    ```bash
    vendor/bin/pint
    vendor/bin/phpstan analyse
    php artisan test
    npm run lint
    ```
+
 6. Commit your changes (`git commit -m 'Add amazing feature'`)
 7. Push to the branch (`git push origin feature/amazing-feature`)
 8. Open a Pull Request
 
 ## Security
 
-If you discover a security vulnerability, please email security@usejuno.com instead of using the issue tracker. All security vulnerabilities will be promptly addressed.
+If you discover a security vulnerability, please email <security@usejuno.com> instead of using the issue tracker. All security vulnerabilities will be promptly addressed.
 
 ## License
 
@@ -300,7 +313,7 @@ Juno is open-sourced software licensed under the [MIT license](LICENSE).
 
 ## Credits
 
-Built with ❤️ by the Juno team.
+Built by the Juno team.
 
 ### Key Dependencies
 
@@ -313,10 +326,10 @@ Built with ❤️ by the Juno team.
 
 ## Support
 
-- 📧 Email: support@usejuno.com
-- 💬 Discord: [Join our community](https://discord.gg/juno)
-- 📖 Documentation: [docs.usejuno.com](https://docs.usejuno.com)
-- 🐛 Bug Reports: [GitHub Issues](https://github.com/usejuno/juno/issues)
+- Email: [support@usejuno.com](mailto:support@usejuno.com)
+- Discord: [Join our community](https://discord.gg/juno)
+- Documentation: [docs.usejuno.com](https://docs.usejuno.com)
+- Bug Reports: [GitHub Issues](https://github.com/usejuno/juno/issues)
 
 ## Roadmap
 
