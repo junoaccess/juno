@@ -73,11 +73,22 @@ class User extends Authenticatable
     }
 
     /**
+     * Get the user's current organization.
+     */
+    public function currentOrganization(): \Illuminate\Database\Eloquent\Relations\BelongsTo
+    {
+        return $this->belongsTo(Organization::class, 'current_organization_id');
+    }
+
+    /**
      * Get the organizations that the user belongs to.
      */
     public function organizations(): \Illuminate\Database\Eloquent\Relations\BelongsToMany
     {
-        return $this->belongsToMany(Organization::class)->using(OrganizationUser::class)->withTimestamps();
+        return $this->belongsToMany(Organization::class)
+            ->using(OrganizationUser::class)
+            ->withPivot(['is_default'])
+            ->withTimestamps();
     }
 
     /**
@@ -102,6 +113,56 @@ class User extends Authenticatable
     public function sentInvitations(): \Illuminate\Database\Eloquent\Relations\HasMany
     {
         return $this->hasMany(Invitation::class, 'invited_by');
+    }
+
+    /**
+     * Get the invitations received by this user.
+     */
+    public function receivedInvitations(): \Illuminate\Database\Eloquent\Relations\HasMany
+    {
+        return $this->hasMany(Invitation::class, 'email', 'email');
+    }
+
+    /**
+     * Check if user has a permission in their current organization.
+     */
+    public function hasPermission(string $permission): bool
+    {
+        if (! $this->current_organization_id) {
+            return false;
+        }
+
+        return $this->roles()
+            ->where('organization_id', $this->current_organization_id)
+            ->whereHas('permissions', function ($query) use ($permission) {
+                $query->where('name', $permission)
+                    ->orWhere('name', explode(':', $permission)[0].':*')
+                    ->orWhere('name', '*');
+            })
+            ->exists();
+    }
+
+    /**
+     * Check if user has a role in their current organization.
+     */
+    public function hasRole(string $role): bool
+    {
+        if (! $this->current_organization_id) {
+            return false;
+        }
+
+        return $this->roles()
+            ->where('organization_id', $this->current_organization_id)
+            ->where('name', $role)
+            ->exists();
+    }
+
+    /**
+     * Set the current organization for this user.
+     */
+    public function setCurrentOrganization(Organization $organization): void
+    {
+        $this->update(['current_organization_id' => $organization->id]);
     }
 
     /**

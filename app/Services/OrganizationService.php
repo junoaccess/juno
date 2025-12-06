@@ -19,9 +19,12 @@ class OrganizationService
                 'email' => $ownerData->email,
                 'phone' => $ownerData->phone,
                 'website' => $data['website'] ?? null,
+                'owner_name' => trim($ownerData->firstName.' '.$ownerData->lastName),
+                'owner_email' => $ownerData->email,
+                'owner_phone' => $ownerData->phone,
             ]);
 
-            // Store owner data for the observer to access
+            // Store owner data for the observer to access (redundant but kept for compatibility)
             $organization->ownerData = $ownerData->toArray();
 
             return $organization;

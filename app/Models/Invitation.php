@@ -24,9 +24,10 @@ class Invitation extends Model
      */
     protected $fillable = [
         'email',
-        'token',
+        'name',
+        'token_hash',
         'invited_by',
-        'role',
+        'roles',
         'status',
         'expires_at',
         'accepted_at',
@@ -43,6 +44,7 @@ class Invitation extends Model
         return [
             'expires_at' => 'datetime',
             'accepted_at' => 'datetime',
+            'roles' => 'array',
         ];
     }
 
@@ -78,7 +80,63 @@ class Invitation extends Model
     protected function isPending(): Attribute
     {
         return Attribute::make(
-            get: fn () => 'pending' === $this->status && !$this->is_expired
+            get: fn () => $this->status === 'pending' && ! $this->is_expired
         );
+    }
+
+    /**
+     * Check if the invitation can be accepted.
+     */
+    public function canBeAccepted(): bool
+    {
+        return $this->is_pending && ! $this->is_expired;
+    }
+
+    /**
+     * Scope for pending invitations.
+     */
+    public function scopePending($query)
+    {
+        return $query->where('status', 'pending')
+            ->where(function ($q) {
+                $q->whereNull('expires_at')
+                    ->orWhere('expires_at', '>', now());
+            });
+    }
+
+    /**
+     * Scope for active invitations.
+     */
+    public function scopeActive($query)
+    {
+        return $query->pending();
+    }
+
+    /**
+     * Scope for expired invitations.
+     */
+    public function scopeExpired($query)
+    {
+        return $query->where('status', 'pending')
+            ->where('expires_at', '<=', now());
+    }
+
+    /**
+     * Mark invitation as accepted.
+     */
+    public function markAsAccepted(): void
+    {
+        $this->update([
+            'status' => 'accepted',
+            'accepted_at' => now(),
+        ]);
+    }
+
+    /**
+     * Mark invitation as revoked.
+     */
+    public function markAsRevoked(): void
+    {
+        $this->update(['status' => 'revoked']);
     }
 }

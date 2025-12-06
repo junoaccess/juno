@@ -45,19 +45,72 @@ class OrganizationOnboardingService
      */
     protected function setupOwner(Organization $organization, ?array $ownerData): User
     {
-        $email = $ownerData['email'] ?? $organization->email;
+        // Get owner details from organization fields or passed data
+        $email = $organization->owner_email ?? $ownerData['email'] ?? $organization->email;
+        $firstName = $ownerData['first_name'] ?? $this->extractFirstName($organization->owner_name);
+        $lastName = $ownerData['last_name'] ?? $this->extractLastName($organization->owner_name);
+        $phone = $organization->owner_phone ?? $ownerData['phone'] ?? $organization->phone;
 
         $owner = $this->userService->findOrCreate($email, [
-            'first_name' => $ownerData['first_name'] ?? 'Owner',
-            'last_name' => $ownerData['last_name'] ?? '',
+            'first_name' => $firstName ?? 'Owner',
+            'last_name' => $lastName ?? '',
             'middle_name' => $ownerData['middle_name'] ?? null,
-            'phone' => $ownerData['phone'] ?? $organization->phone,
+            'phone' => $phone,
         ]);
 
+        // Attach owner to organization and mark as default
         $organization->addUser($owner);
+
+        // Mark this as the user's default organization if they don't have one
+        if (! $owner->current_organization_id) {
+            $owner->setCurrentOrganization($organization);
+        }
+
+        // Set is_default flag on the pivot
+        $organization->users()->updateExistingPivot($owner->id, ['is_default' => true]);
+
         $this->assignOwnerRole($organization, $owner);
 
+        // Set organization contact details from owner if not set
+        if (! $organization->email && $owner->email) {
+            $organization->email = $owner->email;
+        }
+
+        if (! $organization->phone && $owner->phone) {
+            $organization->phone = $owner->phone;
+        }
+
+        if ($organization->isDirty()) {
+            $organization->save();
+        }
+
         return $owner;
+    }
+
+    /**
+     * Extract first name from full name.
+     */
+    protected function extractFirstName(?string $fullName): ?string
+    {
+        if (! $fullName) {
+            return null;
+        }
+
+        return explode(' ', trim($fullName))[0] ?? null;
+    }
+
+    /**
+     * Extract last name from full name.
+     */
+    protected function extractLastName(?string $fullName): ?string
+    {
+        if (! $fullName) {
+            return null;
+        }
+
+        $parts = explode(' ', trim($fullName));
+
+        return count($parts) > 1 ? implode(' ', array_slice($parts, 1)) : '';
     }
 
     /**

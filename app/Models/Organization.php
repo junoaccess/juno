@@ -33,6 +33,9 @@ class Organization extends Model
         'email',
         'phone',
         'website',
+        'owner_name',
+        'owner_email',
+        'owner_phone',
     ];
 
     /**
