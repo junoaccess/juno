@@ -7,18 +7,18 @@ use Illuminate\Database\Eloquent\Relations\Pivot;
 class RoleUser extends Pivot
 {
     /**
-     * The table associated with the model.
-     *
-     * @var string
-     */
-    protected $table = 'role_user';
-
-    /**
      * Indicates if the IDs are auto-incrementing.
      *
      * @var bool
      */
     public $incrementing = true;
+
+    /**
+     * The table associated with the model.
+     *
+     * @var string
+     */
+    protected $table = 'role_user';
 
     /**
      * The attributes that are mass assignable.

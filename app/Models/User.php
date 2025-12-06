@@ -72,21 +72,6 @@ class User extends Authenticatable
     ];
 
     /**
-     * Get the attributes that should be cast.
-     *
-     * @return array<string, string>
-     */
-    protected function casts(): array
-    {
-        return [
-            'email_verified_at' => 'datetime',
-            'password' => 'hashed',
-            'two_factor_confirmed_at' => 'datetime',
-            'date_of_birth' => 'date',
-        ];
-    }
-
-    /**
      * Get the user's current organization.
      */
     public function currentOrganization(): \Illuminate\Database\Eloquent\Relations\BelongsTo
@@ -177,6 +162,29 @@ class User extends Authenticatable
     public function setCurrentOrganization(Organization $organization): void
     {
         $this->update(['current_organization_id' => $organization->id]);
+    }
+
+    /**
+     * Check if user belongs to the given organization.
+     */
+    public function belongsToOrganization(Organization $organization): bool
+    {
+        return $this->organizations()->where('organizations.id', $organization->id)->exists();
+    }
+
+    /**
+     * Get the attributes that should be cast.
+     *
+     * @return array<string, string>
+     */
+    protected function casts(): array
+    {
+        return [
+            'email_verified_at' => 'datetime',
+            'password' => 'hashed',
+            'two_factor_confirmed_at' => 'datetime',
+            'date_of_birth' => 'date',
+        ];
     }
 
     /**

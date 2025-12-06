@@ -1,9 +1,10 @@
 <?php
 
-use App\Http\Controllers\AcceptInvitationController;
+use App\Http\Controllers\Auth\AcceptInvitationController;
+use App\Http\Controllers\Auth\OnboardOrganisationController;
 use App\Http\Controllers\Auth\OrganizationSelectionController;
+use App\Http\Controllers\Auth\OrganizationSwitchController;
 use App\Http\Controllers\DocsController;
-use App\Http\Controllers\OrganizationSwitchController;
 use Illuminate\Support\Facades\Route;
 use Inertia\Inertia;
 use Laravel\Fortify\Features;
@@ -27,16 +28,24 @@ Route::domain(config('app.main_domain'))->group(function () {
 
     // Documentation routes - serve VitePress static site
     Route::prefix('docs')->group(function () {
-        Route::get('/{any?}', DocsController::class)
+        Route::get('{any?}', DocsController::class)
             ->where('any', '.*')
             ->name('docs');
     });
 
     // Organization selection at root domain
-    Route::get('/login', [OrganizationSelectionController::class, 'show'])
+    Route::get('login', [OrganizationSelectionController::class, 'show'])
         ->name('organization.select');
-    Route::post('/login', [OrganizationSelectionController::class, 'store'])
+    Route::post('login', [OrganizationSelectionController::class, 'store'])
         ->name('organization.select.store');
+
+    // Organisation onboarding (registration)
+    Route::middleware('guest')->group(function () {
+        Route::get('onboarding/organisation', [OnboardOrganisationController::class, 'show'])
+            ->name('onboarding.organisation');
+        Route::post('onboarding/organisation', [OnboardOrganisationController::class, 'store'])
+            ->name('onboarding.organisation.store');
+    });
 });
 
 /*
@@ -52,10 +61,10 @@ Route::domain(config('app.main_domain'))->group(function () {
 Route::domain('{organizationSlug}.'.config('app.main_domain'))
     ->middleware(['web', 'org.context'])
     ->group(function () {
-        // Public invitation routes (no auth required)
-        Route::get('/invitations/accept/{token}', [AcceptInvitationController::class, 'show'])
+        // Invitation acceptance (handles both guest registration and auth user acceptance)
+        Route::get('invitations/accept/{token}', [AcceptInvitationController::class, 'show'])
             ->name('invitations.accept');
-        Route::post('/invitations/accept/{token}', [AcceptInvitationController::class, 'store'])
+        Route::post('invitations/accept/{token}', [AcceptInvitationController::class, 'store'])
             ->name('invitations.accept.store');
 
         // Authenticated routes
@@ -64,14 +73,14 @@ Route::domain('{organizationSlug}.'.config('app.main_domain'))
                 return redirect()->route('dashboard');
             });
 
-            Route::get('/dashboard', function () {
+            Route::get('dashboard', function () {
                 return Inertia::render('dashboard');
             })->name('dashboard');
 
             // Organization switching (for users in multiple orgs)
-            Route::get('/organizations/select', [OrganizationSwitchController::class, 'index'])
+            Route::get('organizations/select', [OrganizationSwitchController::class, 'index'])
                 ->name('organizations.select');
-            Route::post('/organizations/{organization}/switch', [OrganizationSwitchController::class, 'store'])
+            Route::post('organizations/{organization}/switch', [OrganizationSwitchController::class, 'store'])
                 ->name('organizations.switch');
         });
 

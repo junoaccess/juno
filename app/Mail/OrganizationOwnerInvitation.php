@@ -17,13 +17,7 @@ class OrganizationOwnerInvitation extends Mailable implements ShouldQueue
     use Queueable;
     use SerializesModels;
 
-    /**
-     * Create a new message instance.
-     */
-    public function __construct(
-        public Organization $organization,
-        public User $owner,
-    ) {}
+    public function __construct(public Organization $organization, public User $owner) {}
 
     /**
      * Get the message envelope.
@@ -52,6 +46,16 @@ class OrganizationOwnerInvitation extends Mailable implements ShouldQueue
     }
 
     /**
+     * Get the attachments for the message.
+     *
+     * @return array<int, \Illuminate\Mail\Mailables\Attachment>
+     */
+    public function attachments(): array
+    {
+        return [];
+    }
+
+    /**
      * Generate a secure login/set-password URL for the owner.
      */
     protected function generateLoginUrl(): string
@@ -62,15 +66,5 @@ class OrganizationOwnerInvitation extends Mailable implements ShouldQueue
             now()->addDays(7),
             ['email' => $this->owner->email]
         );
-    }
-
-    /**
-     * Get the attachments for the message.
-     *
-     * @return array<int, \Illuminate\Mail\Mailables\Attachment>
-     */
-    public function attachments(): array
-    {
-        return [];
     }
 }

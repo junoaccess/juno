@@ -82,4 +82,28 @@ class OrganizationService
             'roles:id,name,slug,organization_id',
         ]);
     }
+
+    /**
+     * Switch user's current organization with validation.
+     */
+    public function switchUserOrganization($user, Organization $organization): void
+    {
+        // Verify user belongs to this organization
+        if (! $user->belongsToOrganization($organization)) {
+            abort(403, 'You do not have access to this organization.');
+        }
+
+        // Update user's current organization
+        $user->update([
+            'current_organization_id' => $organization->id,
+        ]);
+    }
+
+    /**
+     * Get organization subdomain URL.
+     */
+    public function getOrganizationUrl(Organization $organization, string $path = '/dashboard'): string
+    {
+        return "https://{$organization->slug}.".config('app.main_domain').$path;
+    }
 }

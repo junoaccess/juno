@@ -17,13 +17,6 @@ use Illuminate\Support\Str;
 )]
 class CreateAdminUser extends Command
 {
-    public function __construct(
-        protected OrganizationService $organizationService,
-        protected CreateAdminUserAction $createAdminUserAction,
-    ) {
-        parent::__construct();
-    }
-
     /**
      * The name and signature of the console command.
      */
@@ -34,6 +27,13 @@ class CreateAdminUser extends Command
                             {--last-name= : The last name of the admin user}
                             {--organization= : The name of the organisation (will be created if it doesn\'t exist)}
                             {--force : Skip confirmation prompts}';
+
+    public function __construct(
+        protected OrganizationService $organizationService,
+        protected CreateAdminUserAction $createAdminUserAction,
+    ) {
+        parent::__construct();
+    }
 
     /**
      * Execute the console command.

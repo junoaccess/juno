@@ -3,7 +3,7 @@
 namespace App\Http\Controllers\Web\Settings;
 
 use App\Http\Controllers\Controller;
-use App\Http\Requests\Settings\TwoFactorAuthenticationRequest;
+use App\Http\Requests\TwoFactorAuthenticationRequest;
 use Illuminate\Routing\Controllers\HasMiddleware;
 use Illuminate\Routing\Controllers\Middleware;
 use Inertia\Inertia;

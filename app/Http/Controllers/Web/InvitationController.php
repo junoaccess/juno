@@ -29,6 +29,8 @@ class InvitationController extends Controller
 
     public function create(): Response
     {
+        $this->authorize('create', Invitation::class);
+
         return Inertia::render('Invitations/Create');
     }
 
@@ -52,6 +54,8 @@ class InvitationController extends Controller
 
     public function edit(Invitation $invitation): Response
     {
+        $this->authorize('update', $invitation);
+
         return Inertia::render('Invitations/Edit', [
             'invitation' => $invitation,
         ]);

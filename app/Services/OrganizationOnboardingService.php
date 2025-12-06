@@ -3,11 +3,10 @@
 namespace App\Services;
 
 use App\Enums\Role as RoleEnum;
-use App\Mail\OrganizationOwnerInvitation;
 use App\Models\Organization;
 use App\Models\User;
+use App\Notifications\OrganizationOwnerNotification;
 use Illuminate\Support\Facades\DB;
-use Illuminate\Support\Facades\Mail;
 
 class OrganizationOnboardingService
 {
@@ -137,9 +136,7 @@ class OrganizationOnboardingService
     protected function sendOnboardingEmail(Organization $organization, User $owner): void
     {
         try {
-            Mail::to($owner->email)->queue(
-                new OrganizationOwnerInvitation($organization, $owner)
-            );
+            $owner->notify(new OrganizationOwnerNotification($organization, $owner));
         } catch (\Throwable) {
             // Fail silently - email is not critical to onboarding
         }

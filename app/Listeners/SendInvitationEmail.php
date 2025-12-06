@@ -15,16 +15,20 @@ class SendInvitationEmail implements ShouldQueue
      */
     public function handle(InvitationCreated $event): void
     {
-        // Find existing user or create a notifiable recipient
+        // Find existing user or create anonymous notifiable
         $user = User::where('email', $event->invitation->email)->first();
 
+        // Send notification (handles both mail and database channels)
         if ($user) {
-            // Send to existing user via their User model
+            // Send to existing user (mail + database notification)
             $user->notify(new OrganisationInvitationNotification($event->invitation, $event->token));
-        } else {
-            // Send anonymous notification via email address
-            Notification::route('mail', $event->invitation->email)
-                ->notify(new OrganisationInvitationNotification($event->invitation, $event->token));
+
+            return;
         }
+
+        // Send mail to non-user email address
+        Notification::route('mail', $event->invitation->email)->notify(
+            new OrganisationInvitationNotification($event->invitation, $event->token)
+        );
     }
 }

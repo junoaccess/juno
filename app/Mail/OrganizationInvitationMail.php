@@ -15,13 +15,7 @@ class OrganizationInvitationMail extends Mailable implements ShouldQueue
     use Queueable;
     use SerializesModels;
 
-    /**
-     * Create a new message instance.
-     */
-    public function __construct(
-        public Invitation $invitation,
-        public string $token,
-    ) {}
+    public function __construct(public Invitation $invitation, public string $token) {}
 
     /**
      * Get the message envelope.
@@ -52,6 +46,16 @@ class OrganizationInvitationMail extends Mailable implements ShouldQueue
     }
 
     /**
+     * Get the attachments for the message.
+     *
+     * @return array<int, \Illuminate\Mail\Mailables\Attachment>
+     */
+    public function attachments(): array
+    {
+        return [];
+    }
+
+    /**
      * Format roles for display.
      */
     protected function formatRoles(): string
@@ -63,15 +67,5 @@ class OrganizationInvitationMail extends Mailable implements ShouldQueue
         $roles = is_array($this->invitation->roles) ? $this->invitation->roles : [$this->invitation->roles];
 
         return implode(', ', array_map('ucfirst', $roles));
-    }
-
-    /**
-     * Get the attachments for the message.
-     *
-     * @return array<int, \Illuminate\Mail\Mailables\Attachment>
-     */
-    public function attachments(): array
-    {
-        return [];
     }
 }

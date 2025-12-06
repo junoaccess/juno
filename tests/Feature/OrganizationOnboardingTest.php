@@ -2,17 +2,17 @@
 
 use App\Enums\Role as RoleEnum;
 use App\Jobs\OnboardOrganization;
-use App\Mail\OrganizationOwnerInvitation;
 use App\Models\Organization;
 use App\Models\User;
-use Illuminate\Support\Facades\Mail;
+use App\Notifications\OrganizationOwnerNotification;
+use Illuminate\Support\Facades\Notification;
 use Illuminate\Support\Facades\Queue;
 
 use function Pest\Laravel\assertDatabaseHas;
 
 beforeEach(function () {
     Queue::fake();
-    Mail::fake();
+    Notification::fake();
 });
 
 it('dispatches onboarding job when organization is created', function () {
@@ -169,10 +169,15 @@ it('queues onboarding email to owner', function () {
     $job = new OnboardOrganization($organization, $ownerData);
     $job->handle(app(App\Services\OrganizationOnboardingService::class));
 
-    Mail::assertQueued(OrganizationOwnerInvitation::class, function ($mail) use ($organization) {
-        return $mail->organization->id === $organization->id
-            && $mail->hasTo('owner@testorg.com');
-    });
+    $owner = User::where('email', 'owner@testorg.com')->first();
+
+    Notification::assertSentTo(
+        $owner,
+        OrganizationOwnerNotification::class,
+        function ($notification) use ($organization) {
+            return $notification->organization->id === $organization->id;
+        }
+    );
 });
 
 it('is idempotent and does not duplicate when run multiple times', function () {

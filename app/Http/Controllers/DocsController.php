@@ -3,29 +3,53 @@
 namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\File;
 use Symfony\Component\HttpFoundation\BinaryFileResponse;
+use Symfony\Component\HttpFoundation\Response;
 
 class DocsController extends Controller
 {
     /**
-     * Serve the VitePress documentation.
-     *
-     * This controller handles routing for the static VitePress documentation site.
-     * It serves static files directly and returns the SPA index.html for all other routes
-     * to enable client-side routing.
+     * Serve the VitePress documentation site.
      */
-    public function __invoke(Request $request): BinaryFileResponse
+    public function __invoke(Request $request): Response|BinaryFileResponse
     {
         $path = $request->path();
-        $relativePath = str_replace('docs/', '', $path);
-        $filePath = public_path('docs/'.$relativePath);
+        $docsPath = public_path('docs');
 
-        // Serve static files directly if they exist
-        if ('' !== $relativePath && file_exists($filePath) && is_file($filePath)) {
-            return response()->file($filePath);
+        // Remove 'docs/' prefix from path
+        $relativePath = str_replace('docs/', '', $path);
+
+        // Default to index.html for directory requests
+        if (empty($relativePath) || $relativePath === 'docs') {
+            $relativePath = 'index.html';
         }
 
-        // Return the SPA index.html for all other routes (client-side routing)
-        return response()->file(public_path('docs/index.html'));
+        // Append .html if no extension
+        if (! str_contains($relativePath, '.')) {
+            $relativePath .= '.html';
+        }
+
+        $filePath = $docsPath.'/'.$relativePath;
+
+        // Security: prevent directory traversal
+        $realPath = realpath($filePath);
+        $realDocsPath = realpath($docsPath);
+
+        if (! $realPath || ! str_starts_with($realPath, $realDocsPath)) {
+            abort(404);
+        }
+
+        if (! File::exists($realPath)) {
+            // Try index.html in directory
+            $indexPath = $docsPath.'/'.$relativePath.'/index.html';
+            if (File::exists($indexPath)) {
+                return response()->file($indexPath);
+            }
+
+            abort(404);
+        }
+
+        return response()->file($realPath);
     }
 }

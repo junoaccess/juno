@@ -41,3 +41,28 @@ export interface User {
     updated_at: string;
     [key: string]: unknown; // This allows for additional properties...
 }
+
+export interface Organization {
+    id: number;
+    name: string;
+    slug: string;
+    email?: string;
+    phone?: string;
+    website?: string;
+    created_at: string;
+    updated_at: string;
+}
+
+export interface Invitation {
+    id: number;
+    email: string;
+    name?: string;
+    token_hash: string;
+    roles: string[];
+    status: 'pending' | 'accepted' | 'revoked';
+    expires_at: string;
+    organization: Organization;
+    inviter?: User;
+    created_at: string;
+    updated_at: string;
+}

@@ -29,7 +29,7 @@ class UserService
     /**
      * Get all users for a specific organization.
      */
-    public function forOrganization(int $organizationId, int $perPage = 15)
+    public function forOrganization(int $organizationId, int $perPage = 15): LengthAwarePaginator
     {
         return User::withoutGlobalScopes()
             ->forOrganization($organizationId)
@@ -60,6 +60,28 @@ class UserService
             'password' => $attributes['password'] ?? Hash::make(Str::random(32)),
             'email_verified_at' => $attributes['email_verified_at'] ?? now(),
         ]);
+    }
+
+    /**
+     * Create user from invitation data.
+     */
+    public function createFromInvitation(array $validated, string $email): User
+    {
+        return $this->create([
+            'first_name' => $validated['first_name'],
+            'last_name' => $validated['last_name'],
+            'email' => $email,
+            'password' => Hash::make($validated['password']),
+            'email_verified_at' => now(),
+        ]);
+    }
+
+    /**
+     * Check if a user exists with the given email.
+     */
+    public function existsByEmail(string $email): bool
+    {
+        return User::where('email', $email)->exists();
     }
 
     public function update(User $user, array $data): User

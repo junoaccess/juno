@@ -42,15 +42,6 @@ class AcceptInvitationRequest extends FormRequest
     }
 
     /**
-     * Check if user needs to register (doesn't exist yet).
-     */
-    protected function needsRegistration(): bool
-    {
-        // This is passed from the controller/view state
-        return $this->boolean('needs_registration', false);
-    }
-
-    /**
      * Get custom attribute names for validator errors.
      */
     public function attributes(): array
@@ -61,5 +52,14 @@ class AcceptInvitationRequest extends FormRequest
             'middle_name' => 'middle name',
             'password' => 'password',
         ];
+    }
+
+    /**
+     * Check if user needs to register (doesn't exist yet).
+     */
+    protected function needsRegistration(): bool
+    {
+        // This is passed from the controller/view state
+        return $this->boolean('needs_registration', false);
     }
 }

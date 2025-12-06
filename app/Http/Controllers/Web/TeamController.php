@@ -36,8 +36,6 @@ class TeamController extends Controller
 
     public function store(StoreTeamRequest $request): RedirectResponse
     {
-        $this->authorize('create', Team::class);
-
         $team = $this->teamService->create($request->validated());
 
         return redirect()
@@ -65,8 +63,6 @@ class TeamController extends Controller
 
     public function update(UpdateTeamRequest $request, Team $team): RedirectResponse
     {
-        $this->authorize('update', $team);
-
         $this->teamService->update($team, $request->validated());
 
         return redirect()

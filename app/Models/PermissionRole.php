@@ -7,18 +7,18 @@ use Illuminate\Database\Eloquent\Relations\Pivot;
 class PermissionRole extends Pivot
 {
     /**
-     * The table associated with the model.
-     *
-     * @var string
-     */
-    protected $table = 'permission_role';
-
-    /**
      * Indicates if the IDs are auto-incrementing.
      *
      * @var bool
      */
     public $incrementing = true;
+
+    /**
+     * The table associated with the model.
+     *
+     * @var string
+     */
+    protected $table = 'permission_role';
 
     /**
      * Get the permission that owns the pivot.

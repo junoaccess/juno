@@ -3,7 +3,8 @@
 namespace App\Http\Controllers\Web\Settings;
 
 use App\Http\Controllers\Controller;
-use App\Http\Requests\Settings\ProfileUpdateRequest;
+use App\Http\Requests\ProfileUpdateRequest;
+use App\Services\UserService;
 use Illuminate\Contracts\Auth\MustVerifyEmail;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
@@ -13,6 +14,10 @@ use Inertia\Response;
 
 class ProfileController extends Controller
 {
+    public function __construct(
+        protected UserService $userService,
+    ) {}
+
     /**
      * Show the user's profile settings page.
      */
@@ -29,13 +34,14 @@ class ProfileController extends Controller
      */
     public function update(ProfileUpdateRequest $request): RedirectResponse
     {
-        $request->user()->fill($request->validated());
+        $data = $request->validated();
 
-        if ($request->user()->isDirty('email')) {
-            $request->user()->email_verified_at = null;
+        // Clear email verification if email changed
+        if (isset($data['email']) && $data['email'] !== $request->user()->email) {
+            $data['email_verified_at'] = null;
         }
 
-        $request->user()->save();
+        $this->userService->update($request->user(), $data);
 
         return to_route('profile.edit');
     }
@@ -53,7 +59,7 @@ class ProfileController extends Controller
 
         Auth::logout();
 
-        $user->delete();
+        $this->userService->delete($user);
 
         $request->session()->invalidate();
         $request->session()->regenerateToken();

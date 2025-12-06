@@ -27,6 +27,8 @@ class OrganizationController extends Controller
 
     public function create(): Response
     {
+        $this->authorize('create', Organization::class);
+
         return Inertia::render('Organizations/Create');
     }
 
@@ -51,6 +53,8 @@ class OrganizationController extends Controller
 
     public function edit(Organization $organization): Response
     {
+        $this->authorize('update', $organization);
+
         return Inertia::render('Organizations/Edit', [
             'organization' => $organization,
         ]);

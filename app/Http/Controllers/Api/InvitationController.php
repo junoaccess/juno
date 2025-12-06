@@ -28,8 +28,6 @@ class InvitationController extends Controller
 
     public function store(StoreInvitationRequest $request): JsonResponse
     {
-        $this->authorize('create', Invitation::class);
-
         $invitation = $this->invitationService->create($request->validated());
 
         return response()->json([
@@ -49,8 +47,6 @@ class InvitationController extends Controller
 
     public function update(UpdateInvitationRequest $request, Invitation $invitation): JsonResponse
     {
-        $this->authorize('update', $invitation);
-
         $invitation = $this->invitationService->update($invitation, $request->validated());
 
         return response()->json([

@@ -28,8 +28,6 @@ class UserController extends Controller
 
     public function store(StoreUserRequest $request): JsonResponse
     {
-        $this->authorize('create', User::class);
-
         $user = $this->userService->create($request->validated());
 
         return response()->json([
@@ -49,8 +47,6 @@ class UserController extends Controller
 
     public function update(UpdateUserRequest $request, User $user): JsonResponse
     {
-        $this->authorize('update', $user);
-
         $user = $this->userService->update($user, $request->validated());
 
         return response()->json([

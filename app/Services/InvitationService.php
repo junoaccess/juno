@@ -112,6 +112,28 @@ class InvitationService
         return Invitation::where('token_hash', $tokenHash)->first();
     }
 
+    /**
+     * Validate invitation is valid, pending, and not expired.
+     */
+    public function validateInvitation(Invitation $invitation): void
+    {
+        if ($invitation->status !== 'pending') {
+            abort(403, 'This invitation has already been used or revoked.');
+        }
+
+        if ($invitation->expires_at->isPast()) {
+            abort(403, 'This invitation has expired.');
+        }
+    }
+
+    /**
+     * Get invitation URL for the organization subdomain.
+     */
+    public function getInvitationUrl(Invitation $invitation): string
+    {
+        return "https://{$invitation->organization->slug}.".config('app.main_domain').'/dashboard';
+    }
+
     public function update(Invitation $invitation, array $data): Invitation
     {
         $invitation->update(array_filter([

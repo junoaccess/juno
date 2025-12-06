@@ -38,20 +38,6 @@ class Invitation extends Model
     ];
 
     /**
-     * Get the attributes that should be cast.
-     *
-     * @return array<string, string>
-     */
-    protected function casts(): array
-    {
-        return [
-            'expires_at' => 'datetime',
-            'accepted_at' => 'datetime',
-            'roles' => 'array',
-        ];
-    }
-
-    /**
      * Get the organization that owns the invitation.
      */
     public function organization(): \Illuminate\Database\Eloquent\Relations\BelongsTo
@@ -65,26 +51,6 @@ class Invitation extends Model
     public function inviter(): \Illuminate\Database\Eloquent\Relations\BelongsTo
     {
         return $this->belongsTo(User::class, 'invited_by');
-    }
-
-    /**
-     * Check if the invitation is expired.
-     */
-    protected function isExpired(): Attribute
-    {
-        return Attribute::make(
-            get: fn () => $this->expires_at?->isPast() ?? false
-        );
-    }
-
-    /**
-     * Check if the invitation is pending.
-     */
-    protected function isPending(): Attribute
-    {
-        return Attribute::make(
-            get: fn () => $this->status === 'pending' && ! $this->is_expired
-        );
     }
 
     /**
@@ -141,5 +107,39 @@ class Invitation extends Model
     public function markAsRevoked(): void
     {
         $this->update(['status' => 'revoked']);
+    }
+
+    /**
+     * Get the attributes that should be cast.
+     *
+     * @return array<string, string>
+     */
+    protected function casts(): array
+    {
+        return [
+            'expires_at' => 'datetime',
+            'accepted_at' => 'datetime',
+            'roles' => 'array',
+        ];
+    }
+
+    /**
+     * Check if the invitation is expired.
+     */
+    protected function isExpired(): Attribute
+    {
+        return Attribute::make(
+            get: fn () => $this->expires_at?->isPast() ?? false
+        );
+    }
+
+    /**
+     * Check if the invitation is pending.
+     */
+    protected function isPending(): Attribute
+    {
+        return Attribute::make(
+            get: fn () => $this->status === 'pending' && ! $this->is_expired
+        );
     }
 }

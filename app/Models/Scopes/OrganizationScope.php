@@ -25,6 +25,14 @@ class OrganizationScope implements Scope
     }
 
     /**
+     * Extend the query builder with the custom methods.
+     */
+    public function extend(Builder $builder)
+    {
+        // no custom macros for now
+    }
+
+    /**
      * Resolve current organization ID from the request domain slug.
      */
     protected function resolveOrganizationId(): ?int
@@ -77,13 +85,5 @@ class OrganizationScope implements Scope
         }
 
         return null;
-    }
-
-    /**
-     * Extend the query builder with the custom methods.
-     */
-    public function extend(Builder $builder)
-    {
-        // no custom macros for now
     }
 }

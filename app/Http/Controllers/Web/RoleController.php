@@ -35,8 +35,6 @@ class RoleController extends Controller
 
     public function store(StoreRoleRequest $request): RedirectResponse
     {
-        $this->authorize('create', Role::class);
-
         $role = $this->roleService->create($request->validated());
 
         return redirect()
@@ -64,8 +62,6 @@ class RoleController extends Controller
 
     public function update(UpdateRoleRequest $request, Role $role): RedirectResponse
     {
-        $this->authorize('update', $role);
-
         $this->roleService->update($role, $request->validated());
 
         return redirect()

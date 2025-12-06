@@ -7,18 +7,18 @@ use Illuminate\Database\Eloquent\Relations\Pivot;
 class TeamUser extends Pivot
 {
     /**
-     * The table associated with the model.
-     *
-     * @var string
-     */
-    protected $table = 'team_user';
-
-    /**
      * Indicates if the IDs are auto-incrementing.
      *
      * @var bool
      */
     public $incrementing = true;
+
+    /**
+     * The table associated with the model.
+     *
+     * @var string
+     */
+    protected $table = 'team_user';
 
     /**
      * Get the team that owns the pivot.

@@ -29,6 +29,8 @@ class UserController extends Controller
 
     public function create(): Response
     {
+        $this->authorize('create', User::class);
+
         return Inertia::render('Users/Create');
     }
 
@@ -52,6 +54,8 @@ class UserController extends Controller
 
     public function edit(User $user): Response
     {
+        $this->authorize('update', $user);
+
         return Inertia::render('Users/Edit', [
             'user' => $user,
         ]);
