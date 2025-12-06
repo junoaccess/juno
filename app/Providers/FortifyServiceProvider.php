@@ -40,6 +40,31 @@ class FortifyServiceProvider extends ServiceProvider
     {
         Fortify::resetUserPasswordsUsing(ResetUserPassword::class);
         Fortify::createUsersUsing(CreateNewUser::class);
+
+        // Custom authentication logic for organization-scoped login
+        Fortify::authenticateUsing(function (Request $request) {
+            $user = \App\Models\User::where('email', $request->email)->first();
+
+            if (! $user || ! \Illuminate\Support\Facades\Hash::check($request->password, $user->password)) {
+                return null;
+            }
+
+            // Check if user belongs to the current organization (subdomain context)
+            $currentOrganization = app(\App\Support\CurrentOrganization::class);
+
+            if ($currentOrganization->exists() && ! $currentOrganization->hasUser($user->id)) {
+                throw \Illuminate\Validation\ValidationException::withMessages([
+                    'email' => 'You do not have access to this organisation.',
+                ]);
+            }
+
+            // Update user's current_organization_id to match the subdomain organization
+            if ($currentOrganization->exists() && $user->current_organization_id !== $currentOrganization->id()) {
+                $user->update(['current_organization_id' => $currentOrganization->id()]);
+            }
+
+            return $user;
+        });
     }
 
     /**

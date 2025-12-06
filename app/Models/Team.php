@@ -5,6 +5,7 @@ namespace App\Models;
 use App\Models\Scopes\OrganizationScope;
 use App\Models\Traits\ManagesTeamUsers;
 use App\Models\Traits\Sluggable;
+use Filterable\Traits\Filterable;
 use Illuminate\Database\Eloquent\Attributes\ScopedBy;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
@@ -13,6 +14,8 @@ use Illuminate\Database\Eloquent\SoftDeletes;
 #[ScopedBy(OrganizationScope::class)]
 class Team extends Model
 {
+    use Filterable;
+
     /** @use HasFactory<\Database\Factories\TeamFactory> */
     use HasFactory;
 

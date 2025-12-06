@@ -2,24 +2,38 @@
 
 namespace App\Services;
 
-use App\Mail\OrganizationInvitationMail;
+use App\Actions\AcceptInvitationAction;
+use App\Events\InvitationCreated;
+use App\Filters\InvitationFilter;
 use App\Models\Invitation;
 use App\Models\Organization;
 use App\Models\User;
-use Illuminate\Support\Facades\DB;
-use Illuminate\Support\Facades\Mail;
+use Illuminate\Contracts\Pagination\LengthAwarePaginator;
 use Illuminate\Support\Str;
 
 class InvitationService
 {
+    public function __construct(
+        protected AcceptInvitationAction $acceptInvitationAction,
+    ) {}
+
     /**
-     * Paginate invitations.
+     * Paginate invitations with optional filtering.
      */
-    public function paginate(int $perPage = 15)
+    public function paginate(int $perPage = 15, ?InvitationFilter $filter = null): LengthAwarePaginator
     {
-        return Invitation::query()
-            ->latest()
-            ->paginate($perPage);
+        $query = Invitation::query()->with([
+            'organization:id,name,slug',
+            'inviter:id,first_name,last_name,email',
+        ]);
+
+        if ($filter) {
+            $query = $query->filter($filter);
+        } else {
+            $query = $query->latest();
+        }
+
+        return $query->paginate($perPage);
     }
 
     /**
@@ -74,8 +88,8 @@ class InvitationService
             'invited_by' => $invitedBy->id,
         ]);
 
-        // Send invitation email
-        $this->sendInvitationEmail($invitation, $rawToken);
+        // Dispatch event to send invitation email (decoupled)
+        InvitationCreated::dispatch($invitation, $rawToken);
 
         return $invitation;
     }
@@ -85,29 +99,7 @@ class InvitationService
      */
     public function accept(Invitation $invitation, User $user): void
     {
-        if (! $invitation->canBeAccepted()) {
-            throw new \RuntimeException('This invitation cannot be accepted.');
-        }
-
-        DB::transaction(function () use ($invitation, $user) {
-            // Attach user to organization if not already a member
-            if (! $invitation->organization->users()->where('user_id', $user->id)->exists()) {
-                $invitation->organization->users()->attach($user->id, [
-                    'is_default' => $user->organizations()->count() === 0,
-                ]);
-            }
-
-            // Set as current organization if user doesn't have one
-            if (! $user->current_organization_id) {
-                $user->setCurrentOrganization($invitation->organization);
-            }
-
-            // Attach roles to user for this organization
-            $this->attachRoles($invitation, $user);
-
-            // Mark invitation as accepted
-            $invitation->markAsAccepted();
-        });
+        $this->acceptInvitationAction->execute($invitation, $user);
     }
 
     /**
@@ -145,7 +137,10 @@ class InvitationService
 
     public function loadRelationships(Invitation $invitation): Invitation
     {
-        return $invitation->load(['organization', 'inviter']);
+        return $invitation->load([
+            'organization:id,name,slug',
+            'inviter:id,first_name,last_name,email',
+        ]);
     }
 
     /**
@@ -173,43 +168,5 @@ class InvitationService
             ->where('email', $email)
             ->where('status', 'pending')
             ->update(['status' => 'revoked']);
-    }
-
-    /**
-     * Attach roles from invitation to user.
-     */
-    protected function attachRoles(Invitation $invitation, User $user): void
-    {
-        $organization = $invitation->organization;
-        $roleIds = [];
-
-        foreach ($invitation->roles ?? [] as $roleName) {
-            $role = $organization->roles()
-                ->where('name', $roleName)
-                ->orWhere('slug', $roleName)
-                ->first();
-
-            if ($role) {
-                $roleIds[$role->id] = ['organization_id' => $organization->id];
-            }
-        }
-
-        if (! empty($roleIds)) {
-            $user->roles()->syncWithoutDetaching($roleIds);
-        }
-    }
-
-    /**
-     * Send invitation email.
-     */
-    protected function sendInvitationEmail(Invitation $invitation, string $rawToken): void
-    {
-        try {
-            Mail::to($invitation->email)->queue(
-                new OrganizationInvitationMail($invitation, $rawToken)
-            );
-        } catch (\Throwable) {
-            // Fail silently - email is not critical
-        }
     }
 }

@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers\Web;
 
+use App\Filters\TeamFilter;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\StoreTeamRequest;
 use App\Http\Requests\UpdateTeamRequest;
@@ -17,12 +18,12 @@ class TeamController extends Controller
         protected TeamService $teamService,
     ) {}
 
-    public function index(): Response
+    public function index(TeamFilter $filter): Response
     {
         $this->authorize('viewAny', Team::class);
 
         return Inertia::render('Teams/Index', [
-            'teams' => $this->teamService->paginate(),
+            'teams' => $this->teamService->paginate(15, $filter),
         ]);
     }
 

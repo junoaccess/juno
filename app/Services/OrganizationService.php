@@ -2,33 +2,24 @@
 
 namespace App\Services;
 
+use App\Actions\CreateOrganisationAction;
 use App\DataTransferObjects\OwnerData;
+use App\Filters\OrganizationFilter;
 use App\Models\Organization;
-use Illuminate\Support\Facades\DB;
+use Illuminate\Contracts\Pagination\LengthAwarePaginator;
 
 class OrganizationService
 {
+    public function __construct(
+        protected CreateOrganisationAction $createOrganisationAction,
+    ) {}
+
     /**
      * Create a new organization with owner details.
      */
     public function create(array $data, OwnerData $ownerData): Organization
     {
-        return DB::transaction(function () use ($data, $ownerData) {
-            $organization = Organization::create([
-                'name' => $data['name'],
-                'email' => $ownerData->email,
-                'phone' => $ownerData->phone,
-                'website' => $data['website'] ?? null,
-                'owner_name' => trim($ownerData->firstName.' '.$ownerData->lastName),
-                'owner_email' => $ownerData->email,
-                'owner_phone' => $ownerData->phone,
-            ]);
-
-            // Store owner data for the observer to access (redundant but kept for compatibility)
-            $organization->ownerData = $ownerData->toArray();
-
-            return $organization;
-        });
+        return $this->createOrganisationAction->execute($data, $ownerData);
     }
 
     /**
@@ -63,14 +54,21 @@ class OrganizationService
     }
 
     /**
-     * Get paginated list of organizations.
+     * Get paginated list of organizations with optional filtering.
      */
-    public function paginate(int $perPage = 15)
+    public function paginate(int $perPage = 15, ?OrganizationFilter $filter = null): LengthAwarePaginator
     {
-        return Organization::query()
+        $query = Organization::query()
             ->withCount(['users', 'teams'])
-            ->latest()
-            ->paginate($perPage);
+            ->with(['users:id,first_name,last_name,email']);
+
+        if ($filter) {
+            $query = $query->filter($filter);
+        } else {
+            $query = $query->latest();
+        }
+
+        return $query->paginate($perPage);
     }
 
     /**
@@ -78,6 +76,10 @@ class OrganizationService
      */
     public function loadRelationships(Organization $organization): Organization
     {
-        return $organization->load(['users', 'teams', 'roles']);
+        return $organization->load([
+            'users:id,first_name,last_name,email',
+            'teams:id,name,organization_id',
+            'roles:id,name,slug,organization_id',
+        ]);
     }
 }

@@ -6,6 +6,7 @@ use App\Models\Traits\ManagesOrganizationUsers;
 use App\Models\Traits\SendsInvitations;
 use App\Models\Traits\Sluggable;
 use App\Observers\OrganizationObserver;
+use Filterable\Traits\Filterable;
 use Illuminate\Database\Eloquent\Attributes\ObservedBy;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
@@ -14,6 +15,8 @@ use Illuminate\Database\Eloquent\SoftDeletes;
 #[ObservedBy(OrganizationObserver::class)]
 class Organization extends Model
 {
+    use Filterable;
+
     /** @use HasFactory<\Database\Factories\OrganizationFactory> */
     use HasFactory;
 

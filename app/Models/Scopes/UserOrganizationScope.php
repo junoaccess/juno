@@ -13,7 +13,7 @@ class UserOrganizationScope implements Scope
      */
     public function apply(Builder $builder, Model $model): void
     {
-        $orgId = $this->resolveCurrentOrganizationId();
+        $orgId = $this->resolveCurrentOrganizationId($model);
 
         if ($orgId) {
             $builder->whereHas('organizations', function ($query) use ($orgId) {
@@ -25,7 +25,7 @@ class UserOrganizationScope implements Scope
     /**
      * Resolve the current organization ID from various sources.
      */
-    protected function resolveCurrentOrganizationId(): ?int
+    protected function resolveCurrentOrganizationId(Model $model): ?int
     {
         // 1. From container binding (for testing/console)
         if (app()->bound('currentOrganization')) {
@@ -43,9 +43,12 @@ class UserOrganizationScope implements Scope
             return session('current_organization_id');
         }
 
-        // 3. From authenticated user
-        if (auth()->check() && auth()->user()->current_organization_id) {
-            return auth()->user()->current_organization_id;
+        // 3. From authenticated user (only if not querying User model itself)
+        if ($model->getTable() !== 'users' && auth()->check()) {
+            $user = auth()->user();
+            if ($user && $user->current_organization_id) {
+                return $user->current_organization_id;
+            }
         }
 
         return null;

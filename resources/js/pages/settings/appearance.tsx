@@ -6,16 +6,18 @@ import { type BreadcrumbItem } from '@/types';
 
 import AppLayout from '@/layouts/app-layout';
 import SettingsLayout from '@/layouts/settings/layout';
+import { useOrganization } from '@/hooks/use-organization';
 import { edit as editAppearance } from '@/routes/appearance';
 
-const breadcrumbs: BreadcrumbItem[] = [
-    {
-        title: 'Appearance settings',
-        href: editAppearance().url,
-    },
-];
-
 export default function Appearance() {
+    const { slug } = useOrganization();
+
+    const breadcrumbs: BreadcrumbItem[] = [
+        {
+            title: 'Appearance settings',
+            href: editAppearance(slug).url,
+    }];
+
     return (
         <AppLayout breadcrumbs={breadcrumbs}>
             <Head title="Appearance settings" />

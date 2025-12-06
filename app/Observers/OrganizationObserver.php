@@ -2,7 +2,7 @@
 
 namespace App\Observers;
 
-use App\Jobs\OnboardOrganization;
+use App\Events\OrganisationCreated;
 use App\Models\Organization;
 use Illuminate\Contracts\Events\ShouldHandleEventsAfterCommit;
 
@@ -16,7 +16,7 @@ class OrganizationObserver implements ShouldHandleEventsAfterCommit
         // Get owner data if it was temporarily stored on the model
         $ownerData = $organization->ownerData ?? null;
 
-        // Dispatch onboarding job after the database transaction commits
-        OnboardOrganization::dispatch($organization, $ownerData);
+        // Dispatch domain event after the database transaction commits
+        OrganisationCreated::dispatch($organization, $ownerData);
     }
 }

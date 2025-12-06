@@ -13,10 +13,12 @@ import {
 } from '@/components/ui/dialog';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
+import { useOrganization } from '@/hooks/use-organization';
 import { Form } from '@inertiajs/react';
 import { useRef } from 'react';
 
 export default function DeleteUser() {
+    const { slug } = useOrganization();
     const passwordInput = useRef<HTMLInputElement>(null);
 
     return (
@@ -54,7 +56,7 @@ export default function DeleteUser() {
                         </DialogDescription>
 
                         <Form
-                            {...ProfileController.destroy.form()}
+                            {...ProfileController.destroy.form(slug)}
                             options={{
                                 preserveScroll: true,
                             }}

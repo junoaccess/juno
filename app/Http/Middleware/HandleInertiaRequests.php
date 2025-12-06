@@ -38,6 +38,8 @@ class HandleInertiaRequests extends Middleware
     {
         [$message, $author] = str(Inspiring::quotes()->random())->explode('-');
 
+        $currentOrganization = app(\App\Support\CurrentOrganization::class);
+
         return [
             ...parent::share($request),
             'name' => config('app.name'),
@@ -45,6 +47,11 @@ class HandleInertiaRequests extends Middleware
             'auth' => [
                 'user' => $request->user(),
             ],
+            'organization' => $currentOrganization->exists() ? [
+                'id' => $currentOrganization->id(),
+                'name' => $currentOrganization->name(),
+                'slug' => $currentOrganization->slug(),
+            ] : null,
             'sidebarOpen' => ! $request->hasCookie('sidebar_state') || $request->cookie('sidebar_state') === 'true',
         ];
     }

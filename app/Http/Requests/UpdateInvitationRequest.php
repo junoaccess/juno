@@ -8,7 +8,7 @@ class UpdateInvitationRequest extends FormRequest
 {
     public function authorize(): bool
     {
-        return true;
+        return $this->user()->can('update', $this->route('invitation'));
     }
 
     public function rules(): array

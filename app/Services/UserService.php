@@ -2,21 +2,28 @@
 
 namespace App\Services;
 
+use App\Filters\UserFilter;
 use App\Models\User;
+use Illuminate\Contracts\Pagination\LengthAwarePaginator;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Str;
 
 class UserService
 {
     /**
-     * Get paginated users (automatically scoped to current organization via global scope).
-     * Use withoutGlobalScope(UserOrganizationScope::class) to query across all organizations.
+     * Get paginated users with optional filtering.
      */
-    public function paginate(int $perPage = 15)
+    public function paginate(int $perPage = 15, ?UserFilter $filter = null): LengthAwarePaginator
     {
-        return User::query()
-            ->latest()
-            ->paginate($perPage);
+        $query = User::query()->with(['currentOrganization:id,name,slug']);
+
+        if ($filter) {
+            $query = $query->filter($filter);
+        } else {
+            $query = $query->latest();
+        }
+
+        return $query->paginate($perPage);
     }
 
     /**
@@ -85,6 +92,10 @@ class UserService
 
     public function loadRelationships(User $user): User
     {
-        return $user->load(['organizations', 'teams', 'roles']);
+        return $user->load([
+            'organizations:id,name,slug',
+            'teams:id,name,organization_id',
+            'roles:id,name,slug,organization_id',
+        ]);
     }
 }

@@ -3,6 +3,7 @@
 namespace App\Providers;
 
 use App\Enums\Role;
+use App\Support\CurrentOrganization;
 use Illuminate\Support\Facades\Gate;
 use Illuminate\Support\ServiceProvider;
 
@@ -13,6 +14,10 @@ class AppServiceProvider extends ServiceProvider
      */
     public function register(): void
     {
+        // Register CurrentOrganization as a singleton
+        $this->app->singleton(CurrentOrganization::class, function () {
+            return new CurrentOrganization;
+        });
     }
 
     /**

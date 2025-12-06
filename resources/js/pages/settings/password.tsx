@@ -11,16 +11,19 @@ import HeadingSmall from '@/components/heading-small';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
+import { useOrganization } from '@/hooks/use-organization';
 import { edit } from '@/routes/user-password';
 
-const breadcrumbs: BreadcrumbItem[] = [
-    {
-        title: 'Password settings',
-        href: edit().url,
-    },
-];
+export default function PasswordSettings() {
+    const { slug } = useOrganization();
 
-export default function Password() {
+    const breadcrumbs: BreadcrumbItem[] = [
+        {
+            title: 'Password settings',
+            href: edit(slug).url,
+        },
+    ];
+
     const passwordInput = useRef<HTMLInputElement>(null);
     const currentPasswordInput = useRef<HTMLInputElement>(null);
 
@@ -36,7 +39,7 @@ export default function Password() {
                     />
 
                     <Form
-                        {...PasswordController.update.form()}
+                        {...PasswordController.update.form(slug)}
                         options={{
                             preserveScroll: true,
                         }}

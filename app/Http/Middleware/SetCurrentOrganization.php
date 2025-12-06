@@ -2,8 +2,9 @@
 
 namespace App\Http\Middleware;
 
+use App\Models\Organization;
+use App\Support\CurrentOrganization;
 use Illuminate\Http\Request;
-use Illuminate\Support\Facades\Auth;
 use Symfony\Component\HttpFoundation\Response;
 
 class SetCurrentOrganization
@@ -15,40 +16,24 @@ class SetCurrentOrganization
      */
     public function handle(Request $request, \Closure $next): Response
     {
-        if (! Auth::check()) {
-            return $next($request);
-        }
+        $currentOrganization = app(CurrentOrganization::class);
 
-        $user = Auth::user();
+        // Extract organization slug from route parameter (subdomain routing)
+        $organizationSlug = $request->route('organizationSlug');
 
-        // Get current organization from session or user's current_organization_id
-        $currentOrgId = session('current_organization_id') ?? $user->current_organization_id;
+        if ($organizationSlug) {
+            // Resolve organization by slug from subdomain
+            $organization = Organization::where('slug', $organizationSlug)->first();
 
-        if ($currentOrgId) {
-            // Verify user is still a member of this organization
-            $organization = $user->organizations()->find($currentOrgId);
-
-            if ($organization) {
-                // Sync session and user model if they differ
-                if ($user->current_organization_id !== $organization->id) {
-                    $user->setCurrentOrganization($organization);
-                }
-
-                session(['current_organization_id' => $organization->id]);
-
-                // Make organization available throughout the request
-                $request->merge(['currentOrganization' => $organization]);
-                app()->instance('currentOrganization', $organization);
-
-                return $next($request);
+            if (! $organization) {
+                abort(404, 'Organization not found');
             }
-        }
 
-        // No valid organization set - redirect to organization selection if user has orgs
-        if ($user->organizations()->exists()) {
-            if (! $request->routeIs('organizations.select') && ! $request->is('api/*')) {
-                return redirect()->route('organizations.select');
-            }
+            // Set the current organization in the context
+            $currentOrganization->set($organization);
+
+            // Make it available in the request
+            $request->merge(['currentOrganization' => $organization]);
         }
 
         return $next($request);

@@ -1,42 +1,81 @@
 <?php
 
 use App\Http\Controllers\AcceptInvitationController;
+use App\Http\Controllers\Auth\OrganizationSelectionController;
 use App\Http\Controllers\DocsController;
 use App\Http\Controllers\OrganizationSwitchController;
 use Illuminate\Support\Facades\Route;
 use Inertia\Inertia;
 use Laravel\Fortify\Features;
 
-Route::get('/', function () {
-    return Inertia::render('welcome', [
-        'canRegister' => Features::enabled(Features::registration()),
-    ]);
-})->name('home');
+/*
+|--------------------------------------------------------------------------
+| Root Domain Routes
+|--------------------------------------------------------------------------
+|
+| Routes for the main/root domain (e.g., junoaccess.site)
+| These handle organization selection before redirecting to subdomains.
+|
+*/
 
-// Documentation routes - serve VitePress static site
-Route::prefix('docs')->group(function () {
-    Route::get('/{any?}', DocsController::class)
-        ->where('any', '.*')
-        ->name('docs');
+Route::domain(config('app.main_domain'))->group(function () {
+    Route::get('/', function () {
+        return Inertia::render('welcome', [
+            'canRegister' => Features::enabled(Features::registration()),
+        ]);
+    })->name('home');
+
+    // Documentation routes - serve VitePress static site
+    Route::prefix('docs')->group(function () {
+        Route::get('/{any?}', DocsController::class)
+            ->where('any', '.*')
+            ->name('docs');
+    });
+
+    // Organization selection at root domain
+    Route::get('/login', [OrganizationSelectionController::class, 'show'])
+        ->name('organization.select');
+    Route::post('/login', [OrganizationSelectionController::class, 'store'])
+        ->name('organization.select.store');
 });
 
-// Public invitation routes (no auth required)
-Route::get('/invitations/accept/{token}', [AcceptInvitationController::class, 'show'])
-    ->name('invitations.accept');
-Route::post('/invitations/accept/{token}', [AcceptInvitationController::class, 'store'])
-    ->name('invitations.accept.store');
+/*
+|--------------------------------------------------------------------------
+| Subdomain Routes
+|--------------------------------------------------------------------------
+|
+| Routes for organization subdomains (e.g., acme.junoaccess.site)
+| All authenticated app functionality lives here, scoped to the organization.
+|
+*/
 
-Route::middleware(['auth', 'verified'])->group(function () {
-    Route::get('dashboard', function () {
-        return Inertia::render('dashboard');
-    })->name('dashboard');
+Route::domain('{organizationSlug}.'.config('app.main_domain'))
+    ->middleware(['web', 'org.context'])
+    ->group(function () {
+        // Public invitation routes (no auth required)
+        Route::get('/invitations/accept/{token}', [AcceptInvitationController::class, 'show'])
+            ->name('invitations.accept');
+        Route::post('/invitations/accept/{token}', [AcceptInvitationController::class, 'store'])
+            ->name('invitations.accept.store');
 
-    // Organization selection and switching
-    Route::get('/organizations/select', [OrganizationSwitchController::class, 'index'])
-        ->name('organizations.select');
-    Route::post('/organizations/{organization}/switch', [OrganizationSwitchController::class, 'store'])
-        ->name('organizations.switch');
-});
+        // Authenticated routes
+        Route::middleware(['auth', 'verified'])->group(function () {
+            Route::get('/', function () {
+                return redirect()->route('dashboard');
+            });
 
-require __DIR__.'/settings.php';
-require __DIR__.'/resources.php';
+            Route::get('/dashboard', function () {
+                return Inertia::render('dashboard');
+            })->name('dashboard');
+
+            // Organization switching (for users in multiple orgs)
+            Route::get('/organizations/select', [OrganizationSwitchController::class, 'index'])
+                ->name('organizations.select');
+            Route::post('/organizations/{organization}/switch', [OrganizationSwitchController::class, 'store'])
+                ->name('organizations.switch');
+        });
+
+        // Include subdomain-scoped routes
+        require __DIR__.'/settings.php';
+        require __DIR__.'/resources.php';
+    });

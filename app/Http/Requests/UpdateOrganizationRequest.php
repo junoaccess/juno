@@ -11,7 +11,7 @@ class UpdateOrganizationRequest extends FormRequest
      */
     public function authorize(): bool
     {
-        return false;
+        return $this->user()->can('update', $this->route('organization'));
     }
 
     /**
@@ -22,7 +22,10 @@ class UpdateOrganizationRequest extends FormRequest
     public function rules(): array
     {
         return [
-            //
+            'name' => ['sometimes', 'required', 'string', 'max:255'],
+            'email' => ['sometimes', 'nullable', 'email', 'max:255'],
+            'phone' => ['nullable', 'string', 'max:20'],
+            'website' => ['nullable', 'url', 'max:255'],
         ];
     }
 }

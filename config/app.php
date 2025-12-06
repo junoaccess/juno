@@ -56,6 +56,19 @@ return [
 
     /*
     |--------------------------------------------------------------------------
+    | Main Domain
+    |--------------------------------------------------------------------------
+    |
+    | The main domain for your application. This is used for subdomain-based
+    | organization routing. For example, if set to "junoaccess.site", then
+    | organizations with slug "acme" will be accessed at "acme.junoaccess.site".
+    |
+    */
+
+    'main_domain' => env('APP_MAIN_DOMAIN', 'localhost'),
+
+    /*
+    |--------------------------------------------------------------------------
     | Application Timezone
     |--------------------------------------------------------------------------
     |

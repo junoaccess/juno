@@ -3,6 +3,7 @@
 namespace App\Http\Requests;
 
 use App\DataTransferObjects\OwnerData;
+use App\Models\Organization;
 use Illuminate\Foundation\Http\FormRequest;
 use Illuminate\Validation\Rule;
 
@@ -13,7 +14,7 @@ class StoreOrganizationRequest extends FormRequest
      */
     public function authorize(): bool
     {
-        return true;
+        return $this->user()->can('create', Organization::class);
     }
 
     /**

@@ -3,6 +3,7 @@
 namespace App\Models;
 
 use App\Models\Scopes\OrganizationScope;
+use Filterable\Traits\Filterable;
 use Illuminate\Database\Eloquent\Attributes\ScopedBy;
 use Illuminate\Database\Eloquent\Casts\Attribute;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
@@ -12,6 +13,8 @@ use Illuminate\Database\Eloquent\SoftDeletes;
 #[ScopedBy(OrganizationScope::class)]
 class Invitation extends Model
 {
+    use Filterable;
+
     /** @use HasFactory<\Database\Factories\InvitationFactory> */
     use HasFactory;
 

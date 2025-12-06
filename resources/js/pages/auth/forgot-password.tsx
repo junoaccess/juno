@@ -9,9 +9,12 @@ import TextLink from '@/components/text-link';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
+import { useOrganization } from '@/hooks/use-organization';
 import AuthLayout from '@/layouts/auth-layout';
 
 export default function ForgotPassword({ status }: { status?: string }) {
+    const { slug } = useOrganization();
+
     return (
         <AuthLayout
             title="Forgot password"
@@ -61,7 +64,7 @@ export default function ForgotPassword({ status }: { status?: string }) {
 
                 <div className="space-x-1 text-center text-sm text-muted-foreground">
                     <span>Or, return to</span>
-                    <TextLink href={login()}>log in</TextLink>
+                    <TextLink href={login(slug)}>log in</TextLink>
                 </div>
             </div>
         </AuthLayout>

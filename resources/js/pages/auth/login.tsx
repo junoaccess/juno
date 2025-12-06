@@ -9,7 +9,7 @@ import AuthLayout from '@/layouts/auth-layout';
 import { register } from '@/routes';
 import { store } from '@/routes/login';
 import { request } from '@/routes/password';
-import { Form, Head } from '@inertiajs/react';
+import { Form, Head, usePage } from '@inertiajs/react';
 
 interface LoginProps {
     status?: string;
@@ -22,15 +22,24 @@ export default function Login({
     canResetPassword,
     canRegister,
 }: LoginProps) {
+    const { organization } = usePage<{
+        organization?: { name: string; slug: string };
+    }>().props;
+
+    const title = organization
+        ? `Sign in to ${organization.name}`
+        : 'Log in to your account';
+
+    const description = organization
+        ? `Enter your credentials to access ${organization.name}`
+        : 'Enter your email and password below to log in';
+
     return (
-        <AuthLayout
-            title="Log in to your account"
-            description="Enter your email and password below to log in"
-        >
+        <AuthLayout title={title} description={description}>
             <Head title="Log in" />
 
             <Form
-                {...store.form()}
+                {...store.form(organization?.slug || '')}
                 resetOnSuccess={['password']}
                 className="flex flex-col gap-6"
             >
@@ -55,9 +64,9 @@ export default function Login({
                             <div className="grid gap-2">
                                 <div className="flex items-center">
                                     <Label htmlFor="password">Password</Label>
-                                    {canResetPassword && (
+                                    {canResetPassword && organization && (
                                         <TextLink
-                                            href={request()}
+                                            href={request(organization.slug)}
                                             className="ml-auto text-sm"
                                             tabIndex={5}
                                         >
@@ -98,10 +107,10 @@ export default function Login({
                             </Button>
                         </div>
 
-                        {canRegister && (
+                        {canRegister && organization && (
                             <div className="text-center text-sm text-muted-foreground">
                                 Don't have an account?{' '}
-                                <TextLink href={register()} tabIndex={5}>
+                                <TextLink href={register(organization.slug)} tabIndex={5}>
                                     Sign up
                                 </TextLink>
                             </div>

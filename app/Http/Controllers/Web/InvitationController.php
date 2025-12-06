@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers\Web;
 
+use App\Filters\InvitationFilter;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\StoreInvitationRequest;
 use App\Http\Requests\UpdateInvitationRequest;
@@ -17,26 +18,22 @@ class InvitationController extends Controller
         protected InvitationService $invitationService,
     ) {}
 
-    public function index(): Response
+    public function index(InvitationFilter $filter): Response
     {
         $this->authorize('viewAny', Invitation::class);
 
         return Inertia::render('Invitations/Index', [
-            'invitations' => $this->invitationService->paginate(),
+            'invitations' => $this->invitationService->paginate(15, $filter),
         ]);
     }
 
     public function create(): Response
     {
-        $this->authorize('create', Invitation::class);
-
         return Inertia::render('Invitations/Create');
     }
 
     public function store(StoreInvitationRequest $request): RedirectResponse
     {
-        $this->authorize('create', Invitation::class);
-
         $invitation = $this->invitationService->create($request->validated());
 
         return redirect()
@@ -55,8 +52,6 @@ class InvitationController extends Controller
 
     public function edit(Invitation $invitation): Response
     {
-        $this->authorize('update', $invitation);
-
         return Inertia::render('Invitations/Edit', [
             'invitation' => $invitation,
         ]);
@@ -64,8 +59,6 @@ class InvitationController extends Controller
 
     public function update(UpdateInvitationRequest $request, Invitation $invitation): RedirectResponse
     {
-        $this->authorize('update', $invitation);
-
         $this->invitationService->update($invitation, $request->validated());
 
         return redirect()

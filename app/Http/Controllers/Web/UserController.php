@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers\Web;
 
+use App\Filters\UserFilter;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\StoreUserRequest;
 use App\Http\Requests\UpdateUserRequest;
@@ -15,29 +16,24 @@ class UserController extends Controller
 {
     public function __construct(
         protected UserService $userService,
-    ) {
-    }
+    ) {}
 
-    public function index(): Response
+    public function index(UserFilter $filter): Response
     {
         $this->authorize('viewAny', User::class);
 
         return Inertia::render('users/index', [
-            'users' => $this->userService->paginate(15),
+            'users' => $this->userService->paginate(15, $filter),
         ]);
     }
 
     public function create(): Response
     {
-        $this->authorize('create', User::class);
-
         return Inertia::render('Users/Create');
     }
 
     public function store(StoreUserRequest $request): RedirectResponse
     {
-        $this->authorize('create', User::class);
-
         $user = $this->userService->create($request->validated());
 
         return redirect()
@@ -56,8 +52,6 @@ class UserController extends Controller
 
     public function edit(User $user): Response
     {
-        $this->authorize('update', $user);
-
         return Inertia::render('Users/Edit', [
             'user' => $user,
         ]);
@@ -65,8 +59,6 @@ class UserController extends Controller
 
     public function update(UpdateUserRequest $request, User $user): RedirectResponse
     {
-        $this->authorize('update', $user);
-
         $this->userService->update($user, $request->validated());
 
         return redirect()

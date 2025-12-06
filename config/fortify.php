@@ -88,7 +88,7 @@ return [
 
     'prefix' => '',
 
-    'domain' => null,
+    'domain' => '{organizationSlug}.'.env('APP_MAIN_DOMAIN', 'localhost'),
 
     /*
     |--------------------------------------------------------------------------
@@ -101,7 +101,7 @@ return [
     |
     */
 
-    'middleware' => ['web'],
+    'middleware' => ['web', 'org.context'],
 
     /*
     |--------------------------------------------------------------------------

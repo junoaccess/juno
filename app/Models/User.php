@@ -6,6 +6,7 @@ namespace App\Models;
 use App\Models\Scopes\UserOrganizationScope;
 use App\Models\Traits\BelongsToOrganizations;
 use App\Observers\UserObserver;
+use Filterable\Traits\Filterable;
 use Illuminate\Database\Eloquent\Attributes\ObservedBy;
 use Illuminate\Database\Eloquent\Attributes\ScopedBy;
 use Illuminate\Database\Eloquent\Casts\Attribute;
@@ -20,6 +21,7 @@ use Laravel\Fortify\TwoFactorAuthenticatable;
 class User extends Authenticatable
 {
     use BelongsToOrganizations;
+    use Filterable;
 
     /** @use HasFactory<\Database\Factories\UserFactory> */
     use HasFactory;
@@ -140,7 +142,7 @@ class User extends Authenticatable
      */
     public function hasPermission(string $permission): bool
     {
-        if (!$this->current_organization_id) {
+        if (! $this->current_organization_id) {
             return false;
         }
 
@@ -159,7 +161,7 @@ class User extends Authenticatable
      */
     public function hasRole(string $role): bool
     {
-        if (!$this->current_organization_id) {
+        if (! $this->current_organization_id) {
             return false;
         }
 
@@ -185,5 +187,29 @@ class User extends Authenticatable
         return Attribute::make(
             get: fn () => trim("{$this->first_name} {$this->middle_name} {$this->last_name}")
         );
+    }
+
+    /**
+     * Get the user's profile photo URL.
+     */
+    protected function profilePhotoUrl(): Attribute
+    {
+        return Attribute::make(
+            get: fn () => $this->profile_photo_path
+                ? asset('storage/'.$this->profile_photo_path)
+                : $this->defaultProfilePhotoUrl()
+        );
+    }
+
+    /**
+     * Get the default profile photo URL.
+     */
+    protected function defaultProfilePhotoUrl(): string
+    {
+        $name = trim(collect(explode(' ', $this->name))->map(function ($segment) {
+            return mb_substr($segment, 0, 1);
+        })->join(' '));
+
+        return 'https://ui-avatars.com/api/?name='.urlencode($name).'&color=FFFFFF&background=6366F1';
     }
 }

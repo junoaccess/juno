@@ -6,6 +6,7 @@ import {
 } from '@/components/ui/dropdown-menu';
 import { UserInfo } from '@/components/user-info';
 import { useMobileNavigation } from '@/hooks/use-mobile-navigation';
+import { useOrganization } from '@/hooks/use-organization';
 import { logout } from '@/routes';
 import { edit } from '@/routes/profile';
 import { type User } from '@/types';
@@ -17,6 +18,7 @@ interface UserMenuContentProps {
 }
 
 export function UserMenuContent({ user }: UserMenuContentProps) {
+    const { slug } = useOrganization();
     const cleanup = useMobileNavigation();
 
     const handleLogout = () => {
@@ -36,7 +38,7 @@ export function UserMenuContent({ user }: UserMenuContentProps) {
                 <DropdownMenuItem asChild>
                     <Link
                         className="block w-full"
-                        href={edit()}
+                        href={edit(slug)}
                         as="button"
                         prefetch
                         onClick={cleanup}
@@ -50,7 +52,7 @@ export function UserMenuContent({ user }: UserMenuContentProps) {
             <DropdownMenuItem asChild>
                 <Link
                     className="block w-full"
-                    href={logout()}
+                    href={logout(slug)}
                     as="button"
                     onClick={handleLogout}
                     data-test="logout-button"

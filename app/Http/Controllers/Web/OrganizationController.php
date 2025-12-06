@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers\Web;
 
+use App\Filters\OrganizationFilter;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\StoreOrganizationRequest;
 use App\Http\Requests\UpdateOrganizationRequest;
@@ -15,13 +16,12 @@ class OrganizationController extends Controller
 {
     public function __construct(
         protected OrganizationService $organizationService,
-    ) {
-    }
+    ) {}
 
-    public function index(): Response
+    public function index(OrganizationFilter $filter): Response
     {
         return Inertia::render('organisations/index', [
-            'organizations' => $this->organizationService->paginate(15),
+            'organizations' => $this->organizationService->paginate(15, $filter),
         ]);
     }
 

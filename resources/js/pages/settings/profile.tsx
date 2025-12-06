@@ -10,16 +10,10 @@ import InputError from '@/components/input-error';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
+import { useOrganization } from '@/hooks/use-organization';
 import AppLayout from '@/layouts/app-layout';
 import SettingsLayout from '@/layouts/settings/layout';
 import { edit } from '@/routes/profile';
-
-const breadcrumbs: BreadcrumbItem[] = [
-    {
-        title: 'Profile settings',
-        href: edit().url,
-    },
-];
 
 export default function Profile({
     mustVerifyEmail,
@@ -28,7 +22,15 @@ export default function Profile({
     mustVerifyEmail: boolean;
     status?: string;
 }) {
+    const { slug } = useOrganization();
     const { auth } = usePage<SharedData>().props;
+
+    const breadcrumbs: BreadcrumbItem[] = [
+        {
+            title: 'Profile settings',
+            href: edit(slug).url,
+        },
+    ];
 
     return (
         <AppLayout breadcrumbs={breadcrumbs}>
@@ -42,7 +44,7 @@ export default function Profile({
                     />
 
                     <Form
-                        {...ProfileController.update.form()}
+                        {...ProfileController.update.form(slug)}
                         options={{
                             preserveScroll: true,
                         }}
@@ -96,7 +98,7 @@ export default function Profile({
                                                 Your email address is
                                                 unverified.{' '}
                                                 <Link
-                                                    href={send()}
+                                                    href={send(slug)}
                                                     as="button"
                                                     className="text-foreground underline decoration-neutral-300 underline-offset-4 transition-colors duration-300 ease-out hover:decoration-current! dark:decoration-neutral-500"
                                                 >

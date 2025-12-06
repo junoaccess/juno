@@ -3,6 +3,7 @@ import TwoFactorRecoveryCodes from '@/components/two-factor-recovery-codes';
 import TwoFactorSetupModal from '@/components/two-factor-setup-modal';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
+import { useOrganization } from '@/hooks/use-organization';
 import { useTwoFactorAuth } from '@/hooks/use-two-factor-auth';
 import AppLayout from '@/layouts/app-layout';
 import SettingsLayout from '@/layouts/settings/layout';
@@ -17,17 +18,19 @@ interface TwoFactorProps {
     twoFactorEnabled?: boolean;
 }
 
-const breadcrumbs: BreadcrumbItem[] = [
-    {
-        title: 'Two-Factor Authentication',
-        href: show.url(),
-    },
-];
-
 export default function TwoFactor({
     requiresConfirmation = false,
     twoFactorEnabled = false,
 }: TwoFactorProps) {
+    const { slug } = useOrganization();
+
+    const breadcrumbs: BreadcrumbItem[] = [
+        {
+            title: 'Two-Factor Authentication',
+            href: show(slug).url,
+        },
+    ];
+
     const {
         qrCodeSvg,
         hasSetupData,
@@ -66,7 +69,7 @@ export default function TwoFactor({
                             />
 
                             <div className="relative inline">
-                                <Form {...disable.form()}>
+                                <Form {...disable.form(slug)}>
                                     {({ processing }) => (
                                         <Button
                                             variant="destructive"
@@ -99,7 +102,7 @@ export default function TwoFactor({
                                     </Button>
                                 ) : (
                                     <Form
-                                        {...enable.form()}
+                                        {...enable.form(slug)}
                                         onSuccess={() =>
                                             setShowSetupModal(true)
                                         }
