@@ -1,6 +1,7 @@
 <?php
 
 use App\Http\Controllers\AcceptInvitationController;
+use App\Http\Controllers\DocsController;
 use App\Http\Controllers\OrganizationSwitchController;
 use Illuminate\Support\Facades\Route;
 use Inertia\Inertia;
@@ -11,6 +12,13 @@ Route::get('/', function () {
         'canRegister' => Features::enabled(Features::registration()),
     ]);
 })->name('home');
+
+// Documentation routes - serve VitePress static site
+Route::prefix('docs')->group(function () {
+    Route::get('/{any?}', DocsController::class)
+        ->where('any', '.*')
+        ->name('docs');
+});
 
 // Public invitation routes (no auth required)
 Route::get('/invitations/accept/{token}', [AcceptInvitationController::class, 'show'])

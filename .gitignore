@@ -2,6 +2,7 @@
 /bootstrap/ssr
 /node_modules
 /public/build
+/public/docs
 /public/hot
 /public/storage
 /resources/js/actions
@@ -26,3 +27,5 @@ yarn-error.log
 /.nova
 /.vscode
 /.zed
+/docs/.vitepress/cache
+/docs/.vitepress/dist

@@ -4,6 +4,7 @@ export default defineConfig({
     title: 'Juno',
     description: 'Opinionated access management system for modern applications',
     base: '/docs/',
+    ignoreDeadLinks: true,
 
     themeConfig: {
         logo: '/logo.svg',
