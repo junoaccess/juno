@@ -3,8 +3,8 @@
     "private": true,
     "type": "module",
     "scripts": {
-        "build": "vite build",
-        "build:ssr": "vite build && vite build --ssr",
+        "build": "vite build && npm run docs:build && npm run docs:copy",
+        "build:ssr": "vite build && vite build --ssr && npm run docs:build && npm run docs:copy",
         "dev": "vite",
         "docs:build": "vitepress build docs",
         "docs:copy": "rm -rf public/docs && cp -r docs/.vitepress/dist public/docs",
