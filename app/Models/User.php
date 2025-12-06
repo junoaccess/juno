@@ -138,7 +138,7 @@ class User extends Authenticatable
      */
     public function hasPermission(string $permission): bool
     {
-        if (!$this->current_organization_id) {
+        if (! $this->current_organization_id) {
             return false;
         }
 
@@ -157,7 +157,7 @@ class User extends Authenticatable
      */
     public function hasRole(string $role): bool
     {
-        if (!$this->current_organization_id) {
+        if (! $this->current_organization_id) {
             return false;
         }
 
