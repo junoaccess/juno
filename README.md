@@ -305,7 +305,7 @@ We welcome contributions! Please see [CONTRIBUTING.md](CONTRIBUTING.md) for deta
 
 ## Security
 
-If you discover a security vulnerability, please email <security@usejuno.com> instead of using the issue tracker. All security vulnerabilities will be promptly addressed.
+If you discover a security vulnerability, please email <security@junoaccess.site> instead of using the issue tracker. All security vulnerabilities will be promptly addressed.
 
 ## License
 
@@ -326,9 +326,9 @@ Built by the Juno team.
 
 ## Support
 
-- Email: [support@usejuno.com](mailto:support@usejuno.com)
+- Email: [support@junoaccess.site](mailto:support@junoaccess.site)
 - Discord: [Join our community](https://discord.gg/juno)
-- Documentation: [docs.usejuno.com](https://docs.usejuno.com)
+- Documentation: [docs.junoaccess.site](https://docs.junoaccess.site)
 - Bug Reports: [GitHub Issues](https://github.com/usejuno/juno/issues)
 
 ## Roadmap

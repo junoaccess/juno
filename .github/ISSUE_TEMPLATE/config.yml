@@ -1,0 +1,11 @@
+blank_issues_enabled: false
+contact_links:
+  - name: GitHub Discussions
+    url: https://github.com/usejuno/juno/discussions
+    about: Ask questions and discuss ideas with the community
+  - name: Security Vulnerability
+    url: https://github.com/usejuno/juno/security/advisories/new
+    about: Report security vulnerabilities privately
+  - name: Support
+    url: https://github.com/usejuno/juno/blob/main/SUPPORT.md
+    about: Get help and support information

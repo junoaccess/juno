@@ -4,7 +4,7 @@ First off, thank you for considering contributing to Juno! It's people like you 
 
 ## Code of Conduct
 
-This project and everyone participating in it is governed by our Code of Conduct. By participating, you are expected to uphold this code. Please report unacceptable behavior to conduct@usejuno.com.
+This project and everyone participating in it is governed by our Code of Conduct. By participating, you are expected to uphold this code. Please report unacceptable behavior to conduct@junoaccess.site.
 
 ## How Can I Contribute?
 
@@ -57,7 +57,7 @@ Please follow these steps to have your contribution considered:
 
 1. Fork and clone the repository:
    ```bash
-   git clone https://github.com/YOUR_USERNAME/juno.git
+   git clone https://github.com/junoaccess/juno.git
    cd juno
    ```
 
@@ -275,7 +275,7 @@ When working with permissions:
 Don't hesitate to ask questions:
 - Open a GitHub Discussion
 - Join our Discord server
-- Email us at support@usejuno.com
+- Email us at support@junoaccess.site
 
 ## Recognition
 

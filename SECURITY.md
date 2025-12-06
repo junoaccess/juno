@@ -13,7 +13,7 @@ We release patches for security vulnerabilities for the following versions:
 
 **Please do not report security vulnerabilities through public GitHub issues.**
 
-If you discover a security vulnerability within Juno, please send an email to security@usejuno.com. All security vulnerabilities will be promptly addressed.
+If you discover a security vulnerability within Juno, please send an email to security@junoaccess.site. All security vulnerabilities will be promptly addressed.
 
 ### What to Include
 
@@ -88,8 +88,8 @@ We currently do not have a formal bug bounty program, but we appreciate and ackn
 
 ## Contact
 
-Security Team: security@usejuno.com
+Security Team: security@junoaccess.site
 
-For general support: support@usejuno.com
+For general support: support@junoaccess.site
 
 Thank you for helping keep Juno and its users safe!
