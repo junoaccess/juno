@@ -3,8 +3,11 @@
 namespace App\Models;
 
 // use Illuminate\Contracts\Auth\MustVerifyEmail;
+use App\Models\Scopes\UserOrganizationScope;
+use App\Models\Traits\BelongsToOrganizations;
 use App\Observers\UserObserver;
 use Illuminate\Database\Eloquent\Attributes\ObservedBy;
+use Illuminate\Database\Eloquent\Attributes\ScopedBy;
 use Illuminate\Database\Eloquent\Casts\Attribute;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\SoftDeletes;
@@ -13,8 +16,11 @@ use Illuminate\Notifications\Notifiable;
 use Laravel\Fortify\TwoFactorAuthenticatable;
 
 #[ObservedBy(UserObserver::class)]
+#[ScopedBy(UserOrganizationScope::class)]
 class User extends Authenticatable
 {
+    use BelongsToOrganizations;
+
     /** @use HasFactory<\Database\Factories\UserFactory> */
     use HasFactory;
 
@@ -57,6 +63,7 @@ class User extends Authenticatable
      * @var list<string>
      */
     protected $appends = [
+        'name',
         'profile_photo_url',
     ];
 
@@ -131,7 +138,7 @@ class User extends Authenticatable
      */
     public function hasPermission(string $permission): bool
     {
-        if (! $this->current_organization_id) {
+        if (!$this->current_organization_id) {
             return false;
         }
 
@@ -150,7 +157,7 @@ class User extends Authenticatable
      */
     public function hasRole(string $role): bool
     {
-        if (! $this->current_organization_id) {
+        if (!$this->current_organization_id) {
             return false;
         }
 
@@ -171,7 +178,7 @@ class User extends Authenticatable
     /**
      * Get the user's full name.
      */
-    protected function fullName(): Attribute
+    protected function name(): Attribute
     {
         return Attribute::make(
             get: fn () => trim("{$this->first_name} {$this->middle_name} {$this->last_name}")

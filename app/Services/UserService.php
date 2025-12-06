@@ -8,9 +8,24 @@ use Illuminate\Support\Str;
 
 class UserService
 {
+    /**
+     * Get paginated users (automatically scoped to current organization via global scope).
+     * Use withoutGlobalScope(UserOrganizationScope::class) to query across all organizations.
+     */
     public function paginate(int $perPage = 15)
     {
         return User::query()
+            ->latest()
+            ->paginate($perPage);
+    }
+
+    /**
+     * Get all users for a specific organization.
+     */
+    public function forOrganization(int $organizationId, int $perPage = 15)
+    {
+        return User::withoutGlobalScopes()
+            ->forOrganization($organizationId)
             ->latest()
             ->paginate($perPage);
     }
