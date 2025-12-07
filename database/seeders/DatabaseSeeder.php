@@ -2,7 +2,6 @@
 
 namespace Database\Seeders;
 
-use App\Models\User;
 use Illuminate\Database\Seeder;
 
 class DatabaseSeeder extends Seeder
@@ -12,17 +11,7 @@ class DatabaseSeeder extends Seeder
         // Seed all permissions first
         $this->call([
             PermissionSeeder::class,
+            AdminUserSeeder::class,
         ]);
-
-        // Create test user
-        User::firstOrCreate(
-            ['email' => 'test@example.com'],
-            [
-                'first_name' => 'Test',
-                'last_name' => 'User',
-                'password' => 'password',
-                'email_verified_at' => now(),
-            ]
-        );
     }
 }
