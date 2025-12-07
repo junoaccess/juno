@@ -176,8 +176,7 @@ jobs:
         run: php artisan migrate --force
 
       - name: Execute tests (Pest / PHPUnit)
-        run: php artisan test --parallel
-        # or: ./vendor/bin/pest --parallel
+        run: ./vendor/bin/pest --coverage --coverage-text --colors=never
 
   deploy:
     name: Deploy to Laravel Cloud
