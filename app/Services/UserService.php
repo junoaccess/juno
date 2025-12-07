@@ -51,7 +51,7 @@ class UserService
     public function create(array $attributes): User
     {
         return User::create([
-            'uid' => Str::uuid(),
+            'uid' => Str::ulid(),
             'first_name' => $attributes['first_name'] ?? 'User',
             'last_name' => $attributes['last_name'] ?? '',
             'middle_name' => $attributes['middle_name'] ?? null,

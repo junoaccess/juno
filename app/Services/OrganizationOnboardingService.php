@@ -49,12 +49,14 @@ class OrganizationOnboardingService
         $firstName = $ownerData['first_name'] ?? $this->extractFirstName($organization->owner_name);
         $lastName = $ownerData['last_name'] ?? $this->extractLastName($organization->owner_name);
         $phone = $organization->owner_phone ?? $ownerData['phone'] ?? $organization->phone;
+        $password = $ownerData['password'] ?? null;
 
         $owner = $this->userService->findOrCreate($email, [
             'first_name' => $firstName ?? 'Owner',
             'last_name' => $lastName ?? '',
             'middle_name' => $ownerData['middle_name'] ?? null,
             'phone' => $phone,
+            'password' => $password,
         ]);
 
         // Attach owner to organization and mark as default

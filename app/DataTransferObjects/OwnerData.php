@@ -9,6 +9,7 @@ readonly class OwnerData
      */
     public function __construct(
         public string $email,
+        public ?string $password = null,
         public ?string $firstName = null,
         public ?string $lastName = null,
         public ?string $middleName = null,
@@ -22,6 +23,7 @@ readonly class OwnerData
     {
         return new self(
             email: $data['email'],
+            password: $data['password'] ?? null,
             firstName: $data['first_name'] ?? null,
             lastName: $data['last_name'] ?? null,
             middleName: $data['middle_name'] ?? null,
@@ -36,6 +38,7 @@ readonly class OwnerData
     {
         return [
             'email' => $this->email,
+            'password' => $this->password,
             'first_name' => $this->firstName,
             'last_name' => $this->lastName,
             'middle_name' => $this->middleName,

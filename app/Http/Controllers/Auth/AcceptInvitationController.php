@@ -24,7 +24,7 @@ class AcceptInvitationController extends Controller
      * - For guests: show registration form
      * - For authenticated users: show acceptance confirmation
      */
-    public function show(Request $request, string $token): Response
+    public function show(Request $request, string $organizationSlug, string $token): Response
     {
         $invitation = $this->invitationService->findByToken($token);
 
@@ -52,7 +52,7 @@ class AcceptInvitationController extends Controller
      * - For guests: create account and accept invitation
      * - For authenticated users: just accept invitation
      */
-    public function store(Request $request, string $token): RedirectResponse
+    public function store(Request $request, string $organizationSlug, string $token): RedirectResponse
     {
         $invitation = $this->invitationService->findByToken($token);
 

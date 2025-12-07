@@ -109,7 +109,7 @@ class InvitationService
     {
         $tokenHash = $this->hashToken($rawToken);
 
-        return Invitation::where('token_hash', $tokenHash)->first();
+        return Invitation::withoutGlobalScopes()->where('token_hash', $tokenHash)->first();
     }
 
     /**
