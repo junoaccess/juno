@@ -8,7 +8,7 @@ import { Spinner } from '@/components/ui/spinner';
 import AuthLayout from '@/layouts/auth-layout';
 import { login } from '@/routes';
 import { Form, Head } from '@inertiajs/react';
-import { useEffect, useState } from 'react';
+import { useMemo, useState } from 'react';
 
 interface NewOrganisationProps {
     mainDomain: string;
@@ -19,16 +19,20 @@ export default function NewOrganisation({ mainDomain }: NewOrganisationProps) {
     const [slug, setSlug] = useState('');
     const [slugTouched, setSlugTouched] = useState(false);
 
-    // Auto-generate slug from organisation name
-    useEffect(() => {
-        if (!slugTouched && organisationName) {
-            const generatedSlug = organisationName
-                .toLowerCase()
-                .replace(/[^a-z0-9]+/g, '-')
-                .replace(/^-+|-+$/g, '');
-            setSlug(generatedSlug);
+    const generatedSlug = useMemo(() => {
+        if (slugTouched) {
+            return slug;
         }
-    }, [organisationName, slugTouched]);
+
+        if (!organisationName) {
+            return '';
+        }
+
+        return organisationName
+            .toLowerCase()
+            .replace(/[^a-z0-9]+/g, '-')
+            .replace(/^-+|-+$/g, '');
+    }, [organisationName, slug, slugTouched]);
 
     return (
         <AuthLayout
@@ -94,14 +98,14 @@ export default function NewOrganisation({ mainDomain }: NewOrganisationProps) {
                                                 required
                                                 tabIndex={2}
                                                 placeholder="acme"
-                                                value={slug}
+                                                value={generatedSlug}
                                                 onChange={(e) => {
                                                     setSlug(e.target.value);
                                                     setSlugTouched(true);
                                                 }}
                                                 className="flex-1"
                                             />
-                                            <span className="text-sm text-muted-foreground whitespace-nowrap">
+                                            <span className="text-sm whitespace-nowrap text-muted-foreground">
                                                 .{mainDomain}
                                             </span>
                                         </div>
@@ -220,7 +224,9 @@ export default function NewOrganisation({ mainDomain }: NewOrganisationProps) {
                                     </div>
 
                                     <div className="grid gap-2">
-                                        <Label htmlFor="password">Password</Label>
+                                        <Label htmlFor="password">
+                                            Password
+                                        </Label>
                                         <Input
                                             id="password"
                                             type="password"

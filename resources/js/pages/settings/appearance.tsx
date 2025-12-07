@@ -4,9 +4,9 @@ import AppearanceTabs from '@/components/appearance-tabs';
 import HeadingSmall from '@/components/heading-small';
 import { type BreadcrumbItem } from '@/types';
 
+import { useOrganization } from '@/hooks/use-organization';
 import AppLayout from '@/layouts/app-layout';
 import SettingsLayout from '@/layouts/settings/layout';
-import { useOrganization } from '@/hooks/use-organization';
 import { edit as editAppearance } from '@/routes/appearance';
 
 export default function Appearance() {
@@ -16,7 +16,8 @@ export default function Appearance() {
         {
             title: 'Appearance settings',
             href: editAppearance(slug).url,
-    }];
+        },
+    ];
 
     return (
         <AppLayout breadcrumbs={breadcrumbs}>

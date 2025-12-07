@@ -1,5 +1,5 @@
-import { dashboard, login, register } from '@/routes';
 import { useOrganization } from '@/hooks/use-organization';
+import { dashboard, login, register } from '@/routes';
 import { type SharedData } from '@/types';
 import { Head, Link, usePage } from '@inertiajs/react';
 

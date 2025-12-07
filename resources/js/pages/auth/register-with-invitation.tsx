@@ -49,7 +49,8 @@ export default function RegisterWithInvitation({
                                     {invitation.organization.name}
                                 </CardTitle>
                                 <CardDescription>
-                                    You've been invited to join this organisation
+                                    You've been invited to join this
+                                    organisation
                                 </CardDescription>
                             </CardHeader>
 
@@ -59,7 +60,8 @@ export default function RegisterWithInvitation({
                                     <AlertDescription>
                                         {invitation.name
                                             ? `${invitation.name}, you`
-                                            : 'You'}'ve been invited to join{' '}
+                                            : 'You'}
+                                        've been invited to join{' '}
                                         {invitation.organization.name}
                                         {invitation.roles.length > 0 &&
                                             ` as ${invitation.roles.join(', ')}`}
@@ -82,8 +84,9 @@ export default function RegisterWithInvitation({
                                             autoComplete="given-name"
                                             placeholder="John"
                                             defaultValue={
-                                                invitation.name?.split(' ')[0] ||
-                                                ''
+                                                invitation.name?.split(
+                                                    ' ',
+                                                )[0] || ''
                                             }
                                         />
                                         <InputError
@@ -110,7 +113,9 @@ export default function RegisterWithInvitation({
                                                     .join(' ') || ''
                                             }
                                         />
-                                        <InputError message={errors.last_name} />
+                                        <InputError
+                                            message={errors.last_name}
+                                        />
                                     </div>
 
                                     <div className="grid gap-2">
@@ -128,14 +133,16 @@ export default function RegisterWithInvitation({
                                             className="bg-muted"
                                         />
                                         <p className="text-sm text-muted-foreground">
-                                            This email is from your invitation and
-                                            cannot be changed.
+                                            This email is from your invitation
+                                            and cannot be changed.
                                         </p>
                                         <InputError message={errors.email} />
                                     </div>
 
                                     <div className="grid gap-2">
-                                        <Label htmlFor="password">Password</Label>
+                                        <Label htmlFor="password">
+                                            Password
+                                        </Label>
                                         <Input
                                             id="password"
                                             type="password"

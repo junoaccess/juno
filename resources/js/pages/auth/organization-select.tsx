@@ -20,11 +20,7 @@ export default function OrganizationSelect({
         >
             <Head title="Select Organisation" />
 
-            <Form
-                action="/login"
-                method="post"
-                className="flex flex-col gap-6"
-            >
+            <Form action="/login" method="post" className="flex flex-col gap-6">
                 {({ processing, errors }) => (
                     <>
                         <div className="grid gap-6">
